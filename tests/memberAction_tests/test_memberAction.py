@@ -7,7 +7,6 @@ import time
 import os
 import csv
 from datetime import datetime, timezone, timedelta
-import tests.myConstants as const  ##not found in sys.path, so just directly add the folder name
 from tests.memberAction_tests.helpers.myHelperFunc import call_api, get_new_date_UTC, parse_updatedby
 import tests.memberAction_tests.helpers.memAction_sql_helpers as qhlp
 import tests.memberAction_tests.helpers.memAction_api_helpers as ahlp
