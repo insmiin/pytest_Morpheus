@@ -19,9 +19,9 @@ def call_mySQL_query(mysql_connection, csv_filter, sql_file,
     try:
         try:
             #test_dir = os.path.dirname(__file__)  # in the same directory of running test script
-            test_dir = action_const.SQL_FILE_PATH
-            sql_path = os.path.join(test_dir, sql_file)
-
+            #test_dir = action_const.SQL_FILE_PATH
+            #sql_path = os.path.join(test_dir, sql_file)
+            sql_path = action_const.SQL_FILE_PATH / sql_file
 
             with open(sql_path, 'r') as f:
                 mysql_query = f.read()
@@ -73,8 +73,9 @@ def call_mySQL_getHitHistory(mysql_connection, csv_filter, p_input_filter, p_NoA
     try:
         try:
             #test_dir = os.path.dirname(__file__)  # in the same directory of running test script
-            test_dir = action_const.SQL_FILE_PATH
-            sql_path = os.path.join(test_dir, "getMemHitHistory_Mysql.sql")
+            #test_dir = action_const.SQL_FILE_PATH
+            #sql_path = os.path.join(test_dir, "getMemHitHistory_Mysql.sql")
+            sql_path = action_const.SQL_FILE_PATH / "getMemHitHistory_Mysql.sql"
             with open(sql_path, 'r') as f:
                 mysql_query = f.read()
         except FileNotFoundError:

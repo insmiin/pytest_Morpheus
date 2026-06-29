@@ -1,0 +1,7 @@
+after the changes
+in powershell, go to 'C:\Users\lim.miin\PycharmProjects\MyPythonTest2'
+add ur changes to git:
+   git add .
+   git commit -m 'blah2'
+push to github to sync the changes (after this step only it will reflect in github a..)
+   git push origin master

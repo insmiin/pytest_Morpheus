@@ -13,19 +13,21 @@ import tests.memberAction_tests.helpers.memAction_api_helpers as ahlp
 import tests.memberAction_tests.helpers.memAction_assert_helpers as ashlp
 import tests.memberAction_tests.helpers.memAction_helpers as hlp
 from tests.utils.comparison_utils import is_match, is_LT
+import memberAction_Constants as action_const
 from mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
 import ast
 
 
-def read_csv(file_path: str) -> List[Dict]:
+def read_csv(csv_filename: str) -> List[Dict]:
     """Read all lines from CSV and return a list of dictionaries with each dic as a line from csv"""
     """[{"date":'2024-04-2","memcat":'VIP","soccount":3},{"date":'2024-04-2","memcat":'VIP","soccount":3},...]"""
     try:
-        with open(file_path, mode='r', newline='') as csvfile:
+        csv_file = action_const.CSV_FILE_PATH / csv_filename
+        with open(csv_file, mode='r', newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             return [row for row in reader if row['testcase']]  # ignore testcase that is space or empty
     except FileNotFoundError:
-        print(f"File not found: {file_path}")
+        print(f"File not found: {csv_file}")
         sys.exit(1)
 
 
@@ -87,10 +89,10 @@ def assert_ActionUpdate(hitObject, smallest_rankNum, threshold_rankNum, memSetti
         assert is_match(value_after_hit, value_before_hit), errMsg
 
 
-
+#C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/testing/Output check/scoreAction.csv
 @pytest.mark.parametrize("csv_filter"
     , format_filters(read_csv(
-        "C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/testing/Output check/scoreAction.csv"))
+        "scoreAction.csv"))
     , ids=lambda csv_filter: f"testcase_{csv_filter['testcase']}"
                          )
 # companies_list,api_session,mysql_connection only need to call 1 time per run
