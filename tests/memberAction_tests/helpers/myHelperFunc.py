@@ -20,17 +20,22 @@ def call_api(api_session, who: str,method: str, url: str, json_data: Optional[Di
     return response
 
 def get_new_date_UTC(value,unit):
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone,timedelta
     from dateutil.relativedelta import relativedelta
 
     # Today's date in UTC
     today_utc = datetime.now(timezone.utc).date()
+    now_utc = datetime.now(timezone.utc)
 
     if unit == 'months':
         # First day of the current month
         first_of_current_month = today_utc.replace(day=1)
-        # First day of 3 months ago (excluding current month)
+        # return First day of 3 months ago (excluding current month)
         new_date_UTC = first_of_current_month - relativedelta(months=value)
+    if unit == 'hours':
+        new_datetime_UTC = now_utc - timedelta(hours=value)
+        # return hours ago from currentDateTime in UTC & in this '2026-07-01 07:40:27'
+        new_date_UTC = new_datetime_UTC.strftime("%Y-%m-%d %H:%M:%S")
     elif unit == 'days':
         new_date_UTC = today_utc - relativedelta(days=value)
     return new_date_UTC

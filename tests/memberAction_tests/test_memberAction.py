@@ -99,42 +99,19 @@ def assert_ActionUpdate(hitObject, smallest_rankNum, threshold_rankNum, memSetti
 def test_memAction(mysql_connection, companies_list, api_session, api_session_SF, api_MemHierarchyGroupList, \
                    api_CalcBL_CSfinalBL_mapping,
                    sportGroup_sportIDs_UImap_dict, prev_memberCode, csv_filter):
-    # Manually control certain processing
+
+    # flag to manually control certain processing
     to_triggerActionFlag = True  # flag for me to control triggering
     to_reset_member = True  # sometime if wan to continue subsequent action of SAME member, set this manually to false
     apply_creditScore_FLAG = True  # @@changeCS? see if there is a need to retrieve the flag once to determine if using CS or not
 
-    # 1  >>>>> SETUP & DATA PREPARATION BEFORE ACTION TRIGGERING STARTS   <<<<<
-    if to_triggerActionFlag == True:
-        # (Automatically not via CSV), for each member,
-        # For this member, reset updDate(score,mainAction,childAction of all the hits(by setting them outside validity,so that i can reuse existing testing members & not creating new one each time)
-        # reset all member's existing BD to 0 & data to outside validity(to confirm if updatedBy need to be reset too..)
-        # i dint reset BL/SG/memCat yet,as initial cross/single module checking wont involved this attribute(to add if needed)
-        if to_reset_member == True:
-            if csv_filter['memberCode'] != prev_memberCode["value"]:
-                qhlp.reset_member_hits(mysql_connection, csv_filter)
-                prev_memberCode["value"] = csv_filter['memberCode']
 
-        # (initiated by csv)Before any system hit, initialise member setting by doing manual update. (both userValue & merchant update)
-        # The ManualUpdate approach performs direct updates.
-        if csv_filter['prerequisite1']:
-            ahlp.initialise_member(api_session, api_session_SF, mysql_connection, csv_filter)
-
-        # to fabricate updateDate of attributes associated with latestHit(i.e  1 hit only) eg. BL/SG/MemCat/MainActiontable/ChildAction/table/BetDelay
-        # only allow to change the latesthit. it doesnt make sense if you change bl/sg/memCat updateddate prior to latesthit a
-        if csv_filter['EditUpdByDate']:
-            qhlp.modify_member_latestHit_attribute_date(mysql_connection, csv_filter)
-
-        if csv_filter['pre_actionOnOffFlag']:
-            ahlp.turn_OnOff_action_featureflag(api_session, csv_filter['pre_actionOnOffFlag'])
-            time.sleep(4)  # time buffer to make sure flag is updated
-
-    # ===SYSTEM UPDATE(Auto Tag) processing starts here ====
-
-    # score all the necessary hit information derived from csv input file
+    # create a class to store all the necessary information related to NewHit
     class NewHit:
         def __init__(self):
-            self.hitGbRule = False
+            self.hitGbRule = False   # new hit is GBrule or Egon
+            self.hitGbRule_Egon = False  #new hit is Gbrule(non-egon)
+            self.hitGbRule_GbRule = False #new hit is Gbrule(Egon)
             self.hitGbFeature = False
             self._HitID = None
             self.BD_Sportid = None
@@ -158,16 +135,21 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
             self.cross_type = None
 
         @property
-        def HitID(self):  # getter. when u wan to get the value of HitID. jz to return real value
+        def HitID(self):  # getter of HitID. when request for HitID value, return _HitID(final hitID after going thru internal logic in setter)
             return self._HitID
 
-        @HitID.setter  # setter function. when u assign value to HitID. function to jz set/modifier the value, not to return value
+        # setter function of HITID. when u assign value to HitID. function to jz set/modify the value and assigned after processing value to another var(eg. _HitID)
+        @HitID.setter
         def HitID(self, hitName):
             if hitName is None:
                 return  # Just exit without doing anything. it has no where to return to anywhere.
             if GbRuleMapper.get_id_byCode(hitName):
                 self._HitID = GbRuleMapper.get_id_byCode(hitName)
                 self.hitGbRule = True
+                self.hitGbRule_GbRule = True
+                if self._HitID == 11:
+                    self.hitGbRule_Egon = True
+                    self.hitGbRule_GbRule = False
                 self.mysql_filter_statement = f'scr_gbRuleID = {self.HitID}'
                 self.BD_Sportid = GbRuleMapper.get_sports_byCode(hitName)
                 self.UpdBy_Module = GbRuleMapper.get_updByName_byCode(hitName)
@@ -225,7 +207,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                 self.cross_GBBad_EGONGood = True  # type4
                 self.cross_type = 'cross_GBBad_EGONGood'
 
-    # 2 >>>>> STORE AND PROCESS DATA FROM CSV   <<<<<
+    # 1 >>>>> STORE AND PROCESS DATA FROM CSV   <<<<<
     hitObject = NewHit()
     hitObject.HitID = csv_filter['hitType']
     assert hitObject.HitID is not None, f"no valid HitID found, please check your input"
@@ -233,6 +215,33 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         assert csv_filter[
                    'gbRuleScore'] != None, f"HitType is GBrule but no score is provided in your csv file"  # 0 is false
         assert csv_filter['toActionFlag'] != None, f"HitType is GBrule but no toActionFlag is provided in your csv file"
+
+
+    # 2  >>>>> SETUP & DATA PREPARATION BEFORE ACTION TRIGGERING STARTS   <<<<<
+    if to_triggerActionFlag == True:
+        # (Automatically not via CSV), for each member,
+        # For this member, reset updDate(score,mainAction,childAction of all the hits(by setting them outside validity,so that i can reuse existing testing members & not creating new one each time)
+        # reset all member's existing BD to 0 & data to outside validity(to confirm if updatedBy need to be reset too..)
+        # i dint reset BL/SG/memCat yet,as initial cross/single module checking wont involved this attribute(to add if needed)
+        if to_reset_member == True:
+            if csv_filter['memberCode'] != prev_memberCode["value"]:
+                qhlp.reset_member_hits(mysql_connection, csv_filter)
+                prev_memberCode["value"] = csv_filter['memberCode']
+
+        # (initiated by csv)Before any system hit, initialise member setting by doing manual update. (both userValue & merchant update)
+        # The ManualUpdate approach performs direct updates.
+        if csv_filter['prerequisite1']:
+            ahlp.initialise_member(api_session, api_session_SF, mysql_connection, csv_filter)
+
+        # to fabricate updateDate of attributes associated with latestHit(i.e  1 hit only) eg. BL/SG/MemCat/MainActiontable/ChildAction/table/BetDelay
+        # only allow to change the latesthit. it doesnt make sense if you change bl/sg/memCat updateddate prior to latesthit a
+        if csv_filter['EditUpdByDate']:
+            qhlp.modify_member_latestHit_attribute_date(mysql_connection, csv_filter)
+
+        if csv_filter['pre_actionOnOffFlag']:
+            ahlp.turn_OnOff_action_featureflag(api_session, csv_filter['pre_actionOnOffFlag'])
+            time.sleep(4)  # time buffer to make sure flag is updated
+
 
     # 3 >>>>>  SAVE MEMBER'S SETTING (BL,SG,MemCat,isAdv,BetDelay) BEFORE HIT  <<<<<
     memSetting_before_hit = qhlp.call_mySQL_query(mysql_connection, csv_filter, "getMemDetails_Mysql.sql", None)  # 1 dict

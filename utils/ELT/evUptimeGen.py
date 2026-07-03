@@ -137,9 +137,9 @@ var_inp_file_EvResultLog = 'D:/Miin/CRQ(miin draft)/RMGB-157/GBCRQ-409 [Main] Tr
 
 ######################## --ONLY EDIT FIELDS BELOW:--######################
 var_ELTDate = '20250218' #which ELTdate u will run the ETL (flexible, no need wait on ELT date to gen data)
-var_out_file_EvLog = f'C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/try ELT files/20250218(eventuptimenArberMem)/SF_EventLog_{var_ELTDate}xx.csv'
-var_out_file_EvResultLog = f'C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/try ELT files/20250218(eventuptimenArberMem)/SF_EventResult_{var_ELTDate}xx.csv'
-var_out_file_ev = f'C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/try ELT files/20250218(eventuptimenArberMem)/SF_Event_{var_ELTDate}xx.csv'
+var_out_file_EvLog = f'C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/try ELT files/20260602run(nouse)/SF_EventLog_{var_ELTDate}xx.csv'
+var_out_file_EvResultLog = f'C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/try ELT files/20260602run(nouse)/SF_EventResult_{var_ELTDate}xx.csv'
+var_out_file_ev = f'C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/try ELT files/20260602run(nouse)/SF_Event_{var_ELTDate}xx.csv'
 var_EventLogID = 907  #provide next eventresultlogid to start from
 ######################################################################
 

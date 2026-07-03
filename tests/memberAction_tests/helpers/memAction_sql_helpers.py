@@ -116,11 +116,11 @@ def modify_member_latestHit_attribute_date(mysql_connection, csv_filter):
         key, value = line.split(":")  # split by : into string on both side
         pairs[key] = value
 
-    past_date_UTC = get_new_date_UTC(3, 'months')
+    past_date_UTC = get_new_date_UTC(3, 'months') #get 1st day of 3 month ago
     if (pairs['outsideValidPeriod']).lower() == 'yes':
-        past_date_time_utc = str(past_date_UTC) + ' 03:00:00'
+        past_date_time_utc = str(past_date_UTC) + ' 03:00:00'  # 1 hour prior to 3 months ago
     else:
-        past_date_time_utc = str(past_date_UTC) + ' 04:00:00'
+        past_date_time_utc = str(past_date_UTC) + ' 04:00:00'  # exactly 3 months ago
     if GbRuleMapper.get_id_byCode(pairs['id_to_Upd']):
         HitType_ID = GbRuleMapper.get_id_byCode(pairs['id_to_Upd'])
         HitType_updbyName = GbRuleMapper.get_updByName_byCode(pairs['id_to_Upd'])

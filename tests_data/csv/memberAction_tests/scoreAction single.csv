@@ -1,12 +1,12 @@
 notes(not used),traceability,testcase,memberCode,companyID,hitType,gbRuleScore,toActionFlag,prerequisite1,prerequisite2,prerequisite3,EditUpdByDate,pre_actionOnOffFlag,post_actionOnOffFlag
-,,1,gbmock_t3449n025,3449,MBR - Real Basketball,50,no,"byUser:yes
+,,,gbmock_t3449n025,3449,MBR - Real Basketball,50,no,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,
-,,2,gbmock_t3449n025,3449,MBR - Real Basketball,60,no,,,,,,
+,,,gbmock_t3449n025,3449,MBR - Real Basketball,60,no,,,,,,
 "*seq of triggering
   1)initialisation(auto in system, not in this CSV)
   2)all column after action(except post_actionOnOffFlag)
@@ -712,42 +712,42 @@ isManualRevised:",,,,
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball"
 ,,,gbmock_t3449mer008,3449,EGON,60,yes,,,,,,
-,single_Scn#5C_tc#3,,gbmock_t3449n004,3449,MBR - Real Basketball,40,yes,"byUser:yes
+,single_Scn#5C_tc#3,9,gbmock_t3449n004,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,
-,,,gbmock_t3449n004,3449,MBR - Real Basketball,20,yes,,,,,,
-,,,gbmock_t3449n004,3449,MBR - Real Basketball,10,yes,,,,"outsideValidPeriod:yes
+,,10,gbmock_t3449n004,3449,MBR - Real Basketball,20,yes,,,,,,
+,,11,gbmock_t3449n004,3449,MBR - Real Basketball,10,yes,,,,"outsideValidPeriod:yes
 id_to_Upd:MBR - Real Basketball","flag:off
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball"
-,,,gbmock_t3449n004,3449,EGON,30,yes,,,,,,
-,single_Scn#5C_tc#4,,gbmock_t3449n005,3449,MBR - Real Basketball,40,yes,"byUser:yes
+,,12,gbmock_t3449n004,3449,EGON,30,yes,,,,,,
+,single_Scn#5C_tc#4,13,gbmock_t3449n005,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,
-,,,gbmock_t3449n005,3449,MBR - Real Basketball,10,yes,,,,,"flag:off
+,,14,gbmock_t3449n005,3449,MBR - Real Basketball,10,yes,,,,,"flag:off
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball"
-,,,gbmock_t3449n005,3449,EGON,30,yes,,,,,,
-,single_Scn#5C_tc#4b,,gbmock_t3449n006,3449,MBR - Real Basketball,40,yes,"byUser:yes
+,,15,gbmock_t3449n005,3449,EGON,30,yes,,,,,,
+,single_Scn#5C_tc#4b,16,gbmock_t3449n006,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,
-,,,gbmock_t3449n006,3449,MBR - Real Basketball,10,yes,,,,,"flag:off
+,,17,gbmock_t3449n006,3449,MBR - Real Basketball,10,yes,,,,,"flag:off
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball"
-,,,gbmock_t3449n006,3449,EGON,60,yes,,,,,,
-,single_Scn#5C_tc#5,,gbmock_t3449n014,3449,MBR - Real Basketball,40,yes,"byUser:no
+,,18,gbmock_t3449n006,3449,EGON,60,yes,,,,,,
+,single_Scn#5C_tc#5,19,gbmock_t3449n014,3449,MBR - Real Basketball,40,yes,"byUser:no
 memberSettingProfileID:17
 spreadGroupID:2
 memberCategoryID:5
@@ -760,32 +760,32 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,
-,,,gbmock_t3449n014,3449,MBR - Real Basketball,10,yes,,,,,"flag:off
+,,20,gbmock_t3449n014,3449,MBR - Real Basketball,10,yes,,,,,"flag:off
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball"
-,,,gbmock_t3449n014,3449,EGON,30,yes,,,,,,
-,single_Scn#5C_tc#6,,gbmock_t3449n015,3449,FAMember - Invalid Key,,Action#1,"byUser:yes
+,,21,gbmock_t3449n014,3449,EGON,30,yes,,,,,,
+,single_Scn#5C_tc#6,22,gbmock_t3449n015,3449,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,
-,,,gbmock_t3449n015,3449,FAMember - Invalid Key,,Action#1off,,,,,"flag:off
+,,23,gbmock_t3449n015,3449,FAMember - Invalid Key,,Action#1off,,,,,"flag:off
 hittype_to_Upd:FAMember - Invalid Key","flag:on
 hittype_to_Upd:FAMember - Invalid Key"
-,,,gbmock_t3449n015,3449,EGON,30,yes,,,,,,
-,single_Scn#5C_tc#7,,gbmock_t3449n016,3449,MBR - Real Basketball,40,yes,"byUser:yes
+,,24,gbmock_t3449n015,3449,EGON,30,yes,,,,,,
+,single_Scn#5C_tc#7,25,gbmock_t3449n016,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,
-,,,gbmock_t3449n016,3449,MBR - Real Basketball,10,yes,,,,,"flag:off
+,,26,gbmock_t3449n016,3449,MBR - Real Basketball,10,yes,,,,,"flag:off
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball"
-,,,gbmock_t3449n016,3449,EGON,30,yes,,,,"outsideValidPeriod:yes
+,,27,gbmock_t3449n016,3449,EGON,30,yes,,,,"outsideValidPeriod:yes
 id_to_Upd:MBR - Real Basketball",,
 ,,,,,,,,,,,,,
 ,noActCondMet#1,,gbmock_t3449n026,3449,MBR - Real Basketball,60,yes,"byUser:yes
