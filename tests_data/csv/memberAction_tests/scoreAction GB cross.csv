@@ -1,4 +1,4 @@
-notes(not used),traceability,testcase,memberCode,companyID,hitType,gbRuleScore,toActionFlag,prerequisite1,prerequisite2,prerequisite3,EditUpdByDate,pre_actionOnOffFlag,post_actionOnOffFlag,,,
+notes(not used),traceability,testcase,memberCode,companyID,hitType,gbRuleScore,toActionFlag,prerequisite1,prerequisite2,prerequisite3,EditUpdatedDate,pre_actionOnOffFlag,post_actionOnOffFlag,,,
 ,,1,gbmock_test040,3450,MBR - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
@@ -65,9 +65,11 @@ isManualRevised:0",,,,,,,,
 "*==gbRuleScore & toActionFlag ==
 *Gbfeature can ignore
 *Gbrule must have",(chg invkey to Action#1),,gbmock_t3442n007,3442,MBR - Real Basketball,50,yes,,,,,,,,,
-"*===EditUpdByDate===
-outsideValidPeriod:no
-id_to_Upd:FAMember - Invalid Key",,,gbmock_t3442n007,3442,Arber - Real BB,20,yes,,,,,,,,,
+"*===EditUpdatedDate===
+outsideValidPeriod:no  [yes=jz expired, no=almst expired]
+module_to_Upd:EGON   [same as hitype/simulatortype]
+upd_module_DT:yes     [upd hit/action date of modules?]
+upd_memsetting_DT:yes  [up bd/sg/bl/memCat of member?]",,,gbmock_t3442n007,3442,Arber - Real BB,20,yes,,,,,,,,,
 "* ==pre/post_actionOnOffFlag==
 *this is for featureOnOff_action flag. Value is on or off
 flag:off
@@ -224,9 +226,13 @@ isAdvised:0
 memberProfileGroupID:
 isManualRevised:",,,,,,,,
 ,,,gbmock_t3442n010,3442,MBR - Real Basketball,50,yes,,,,"outsideValidPeriod:no
-id_to_Upd:FAMember - Invalid Key",,,,,
+module_to_Upd:FAMember - Invalid Key
+upd_module_DT:yes
+upd_memsetting_DT:no",,,,,
 ,,,gbmock_t3442n010,3442,Arber - Real BB,20,yes,,,,"outsideValidPeriod:yes
-id_to_Upd:MBR - Real Basketball",,,,,
+module_to_Upd:MBR - Real Basketball
+upd_module_DT:yes
+upd_memsetting_DT:no",,,,,
 ,"cross#11
 *2 more steps with whitelist, do it manually",,gbmock_t3442n011,3442,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:1
@@ -340,7 +346,9 @@ memberProfileGroupID:
 isManualRevised:1",,,,,,,,
 ,cross#16,,gbmock_t3442n012,3442,EGON,50,yes,,,,,,,,,
 ,,,gbmock_t3442n012,3442,TWM - Real Basketball,50,yes,,,,"outsideValidPeriod:yes
-id_to_Upd:EGON",,,,,
+module_to_Upd:EGON
+upd_module_DT:yes
+upd_memsetting_DT:no",,,,,
 ,,,gbmock_t3442n012,3442,MBR - Real Basketball,80,yes,,,,,,,,,
 ,cross#17,,gbmock_t3442n001,3442,Arber - Real BB,10,yes,"byUser:yes
 memberSettingProfileID:1

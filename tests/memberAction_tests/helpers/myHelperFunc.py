@@ -6,6 +6,9 @@ import os
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, root_dir)
 from tests.utils.comparison_utils import is_match,is_match,is_GT,is_LT,is_LTE,is_GTE
+from datetime import datetime, timezone, timedelta
+from dateutil.relativedelta import relativedelta
+from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
 
 
 def call_api(api_session, who: str,method: str, url: str, json_data: Optional[Dict] = None) -> requests.Response:
@@ -19,26 +22,27 @@ def call_api(api_session, who: str,method: str, url: str, json_data: Optional[Di
     #assert response.status_code == 200,f"calling to {who} return {response.status_code} "
     return response
 
-def get_new_date_UTC(value,unit):
-    from datetime import datetime, timezone,timedelta
-    from dateutil.relativedelta import relativedelta
 
-    # Today's date in UTC
-    today_utc = datetime.now(timezone.utc).date()
-    now_utc = datetime.now(timezone.utc)
+def get_past_date_UTC(value,unit):
+    # get current_datetime in GMT-4 ,then compute old date using parameter.lastly, return the olddate in UTC to b saved in mysql
+    now = datetime.now()  # SGT/UTC+8
+    now_GMTminus4 = now - timedelta(hours=12) #GMT-4
 
     if unit == 'months':
-        # First day of the current month
-        first_of_current_month = today_utc.replace(day=1)
-        # return First day of 3 months ago (excluding current month)
-        new_date_UTC = first_of_current_month - relativedelta(months=value)
-    if unit == 'hours':
-        new_datetime_UTC = now_utc - timedelta(hours=value)
-        # return hours ago from currentDateTime in UTC & in this '2026-07-01 07:40:27'
-        new_date_UTC = new_datetime_UTC.strftime("%Y-%m-%d %H:%M:%S")
+        # get First day of the x months ago(excluding current month)
+        months_ago_GMTminus4 = (now_GMTminus4.replace(day=1, hour=0, minute=0, second=0, microsecond=0) - relativedelta(months=3))
+        # return 1st day of x months ago in UTC format  (type:datetime.datetime. value sample:2026-04-01 04:00:00)
+        new_date_UTC = months_ago_GMTminus4 + timedelta(hours=4)
+    elif unit == 'hours':
+        # get hours ago
+        hours_ago_GMTminus4 = (now_GMTminus4 - timedelta(hours=value)).replace(microsecond=0) #remove millisecs
+        # return x hours ago,in UTC format  (type:datetime.datetime. value sample:2026-04-01 04:00:00)
+        new_date_UTC = hours_ago_GMTminus4 + timedelta(hours=4)
     elif unit == 'days':
-        new_date_UTC = today_utc - relativedelta(days=value)
+        pass
     return new_date_UTC
+
+
 
 def parse_updatedby(updatedby):
     '''

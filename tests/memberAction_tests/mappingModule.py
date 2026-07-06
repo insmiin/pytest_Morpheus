@@ -86,7 +86,7 @@ class MemberProfileSettingMappers:
         msp_data['percentage']: msp_id
         for msp_id, msp_data in member_profileSetting_dict.items()
     }
-    print('_member_profileSetting_perc_to_id_map',_member_profileSetting_perc_to_id_map)
+
 
     # helper functions for memberSettingProfile
     @classmethod
@@ -141,13 +141,11 @@ class ModuleMapper:
     def get(cls, code):
         return cls._mapping.get(code, None)
 
-
-
 class GbRuleMapper:
     _mapping = {
-        "Arber - Real BB": {
-            "id": 2,
-            "UpdBy_Name":"GB_ArberRule_BB",
+        "Arber - Real BB": {            #module_code or name get it from simulator dropdown list
+            "id": 2,                    #module_ID id associated with this module
+            "UpdBy_Name":"GB_ArberRule_BB",      #updatedby_module, Module name to store in updatedBy field
             "action_featureOnOffFlag_id":281,
             "sportdict": [
                 {"sportID": 2, "sportTypeID": 1}
@@ -588,6 +586,16 @@ class GbRuleMapper:
         }
     }
 
+    # using above ori dict, automatically build another lookup map for updByName to id {'GB_ART_SCFT': 17,'GB_ART_SC1H': 16,...}
+    _mapping_updByName_to_id = {
+        Gbrule_data['UpdBy_Name']: Gbrule_data['id']
+        for Gbrule_code, Gbrule_data in _mapping.items()
+    }
+
+    @classmethod
+    def get_id_by_updByName(cls, updByName):
+        # Extremely fast O(1) dictionary lookup
+        return cls._mapping_updByName_to_id.get(updByName, None)
     @classmethod
     def get_id_byCode(cls, code):  #to get id associated with each name/code
         return cls._mapping.get(code, {}).get('id')
@@ -819,6 +827,16 @@ class GbFeatureMapper:
         }
     }
 
+    # using above ori dict, automatically build another lookup map for updByName to id {'GB_ART_SCFT': 17,...}
+    _mapping_updByName_to_id = {
+        Gbrule_data['UpdBy_Name']: Gbrule_data['id']
+        for Gbrule_code, Gbrule_data in _mapping.items()
+    }
+
+    @classmethod
+    def get_id_by_updByName(cls, updByName):
+        # Extremely fast O(1) dictionary lookup
+        return cls._mapping_updByName_to_id.get(updByName, None)
     @classmethod
     def get_id_byCode(cls, code):  #to get id associated with each name/code
         return cls._mapping.get(code, {}).get('id')

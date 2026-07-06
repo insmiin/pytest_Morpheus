@@ -1,5 +1,5 @@
-
-from tests.memberAction_tests.helpers.myHelperFunc import call_api, get_new_date_UTC, parse_updatedby
+import pytest
+import tests.memberAction_tests.helpers.myHelperFunc as helper
 from tests.utils.comparison_utils import is_match, is_LT
 from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
 import ast
@@ -89,7 +89,7 @@ def get_most_severe_value_from_all_moduleHits(hitObject, moduleHistory_after_hit
     return smallest_ranking_number_msp, smallest_ranking_number_spread, betDelay_Severest_dict, memCategory_of_directEGON, isAdvised_of_directEGON, BetDelay_of_directEGON
 
 
-# @@changeCS:
+
 def creditScore_application(smallest_rankNum, api_CalcBL_CSfinalBL_mapping, creditScore_before_hit):
     to_apply_creditScore = False
     # if CS is <=1  or dont have creditScore, no need apply creditScore, return newActionBL
@@ -119,10 +119,10 @@ def BL_SG_Cross_Module_check(memSetting_before_hit, hitObject, smallest_rankNum,
     # this function is only used for special handling for EGON, so far
     if field_type == 'msp':
         value_before_hit = get_ranking_byID(memSetting_before_hit['sfMemberSettingProfileID'], 'msp')
-        value_lastUpdatedBy, _ = parse_updatedby(memSetting_before_hit['sfMemberProfileSettingLastUpdatedBy'])
+        value_lastUpdatedBy, _ = helper.parse_updatedby(memSetting_before_hit['sfMemberProfileSettingLastUpdatedBy'])
     else:
         value_before_hit = get_ranking_byID(memSetting_before_hit['sfSpreadGroupID'], 'spread')
-        value_lastUpdatedBy, _ = parse_updatedby(memSetting_before_hit['sfSpreadGroupLastUpdatedBy'])
+        value_lastUpdatedBy, _ = helper.parse_updatedby(memSetting_before_hit['sfSpreadGroupLastUpdatedBy'])
 
     # special handling for cross_GBBad_EGONGood
     # when upgrading(smallest_rankNum/most_severe_value  is better than existing value), lastupdatedby mz be EGON. if not dun take action.
@@ -135,25 +135,30 @@ def BL_SG_Cross_Module_check(memSetting_before_hit, hitObject, smallest_rankNum,
 
 def BL_SG_Single_Module_check(memSetting_before_hit, hitObject, new_Hit_Action, smallest_rankNum, threshold_rankNum,
                               field_type):
-    LastUpdatedby_system = False
+    isWithinValidityPeriod = False
+    updatedby_system = False
     if field_type == 'msp':
-        lastUpdatedBy, lastScoreType = parse_updatedby(memSetting_before_hit['sfMemberProfileSettingLastUpdatedBy'])
-        isWithinValidityPeriod = memSetting_before_hit['msp_withinValidityPeriod']
+        lastUpdatedBy, lastScoreType = helper.parse_updatedby(memSetting_before_hit['sfMemberProfileSettingLastUpdatedBy'])
+        updatedby_system = is_system(lastUpdatedBy)
+        if updatedby_system:
+            module_validFrom_utc = get_module_validFromDate_utc(lastUpdatedBy,'updatedby_module')
+            isWithinValidityPeriod = check_if_within_validity_period(module_validFrom_utc,memSetting_before_hit['sfMemberProfileSettingUpdatedDate'])
         existing_valueID = memSetting_before_hit['sfMemberSettingProfileID']
     elif field_type == 'spread':
-        lastUpdatedBy, lastScoreType = parse_updatedby(memSetting_before_hit['sfSpreadGroupLastUpdatedBy'])
-        isWithinValidityPeriod = memSetting_before_hit['spread_withinValidityPeriod']
+        lastUpdatedBy, lastScoreType = helper.parse_updatedby(memSetting_before_hit['sfSpreadGroupLastUpdatedBy'])
+        updatedby_system = is_system(lastUpdatedBy)
+        if updatedby_system:
+            module_validFrom_utc = get_module_validFromDate_utc(lastUpdatedBy,'updatedby_module')
+            isWithinValidityPeriod = check_if_within_validity_period(module_validFrom_utc,memSetting_before_hit['sfSpreadGroupUpdatedDate'])
         existing_valueID = memSetting_before_hit['sfSpreadGroupID']
 
-    if lastUpdatedBy and lastUpdatedBy.startswith('GB_') and not lastUpdatedBy.startswith('GB_MemberList'):
-        LastUpdatedby_system = True
 
     # process Single EGON
     if hitObject.single_EGON:
         # if lastUpdby=DiffModule & withinValidityPeriod & prevScoreType=Bad, use severity btw existing & new hit value.
         # else remain(use newHit)
-        if LastUpdatedby_system and not is_match(lastUpdatedBy,
-                                                 hitObject.UpdBy_Module) and isWithinValidityPeriod == 1 and lastScoreType == 'Bad':
+        if updatedby_system and not is_match(lastUpdatedBy,
+                                                 hitObject.UpdBy_Module) and isWithinValidityPeriod == True and lastScoreType == 'Bad':
             smallest_rankNum = get_most_severe(get_ranking_byID(existing_valueID, field_type), smallest_rankNum)
             errMsg = f'{field_type} failed to use most severe value btw new & existing value. behaviour Hit: singleEGON & LastUpdby=diffModule & withinValidity & LastScoreType !=good'
         else:
@@ -161,7 +166,7 @@ def BL_SG_Single_Module_check(memSetting_before_hit, hitObject, new_Hit_Action, 
     # process Single Non-EGON
     else:
         # Hit Single GBrule & lastUpdatedby=User/null
-        if hitObject.hitGbRule and not LastUpdatedby_system:
+        if hitObject.hitGbRule and not updatedby_system:
             # if GoodScore,noAction allowed
             if is_match(new_Hit_Action['ScoreType'], 1):
                 smallest_rankNum = None  # action is not allowed
@@ -181,14 +186,14 @@ def BL_SG_Single_Module_check(memSetting_before_hit, hitObject, new_Hit_Action, 
 
 
         # Hit SingleModule(GBrule & GBfeature) & LastUpdatedBy=DiffModule(due to reduce from cross)
-        elif lastUpdatedBy and LastUpdatedby_system and not is_match(lastUpdatedBy, hitObject.UpdBy_Module):
+        elif lastUpdatedBy and updatedby_system and not is_match(lastUpdatedBy, hitObject.UpdBy_Module):
             # if GoodScore,noAction allowed
             if is_match(new_Hit_Action['ScoreType'], 1):
                 smallest_rankNum = None  # action is not allowed
                 errMsg = f'update to {field_type} is not allowed for GoodScore and lastupdatedby is by diff Module'
             else:  # badScore & Within Validity period,then use most severe value between existing and new Hit
                 # existing value is not possible to be Null/empty at this point
-                if isWithinValidityPeriod == 1:  #
+                if isWithinValidityPeriod == True:  #
                     smallest_rankNum = get_most_severe(get_ranking_byID(existing_valueID, field_type), smallest_rankNum)
                     errMsg = f'{field_type} failed to use most severe value btw new & existing value. behaviour Hit: singleModule,LstUpdBy=DiffModule,withinValidtityPeriod '
                 else:
@@ -336,3 +341,75 @@ def get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore,type):
 #     threshold_rankNum = PriorValue_rankNum
 # else:  # has no userManualUpd & prioritisedFlag, then use value uponCreation
 #     threshold_rankNum = initial_rankNum
+
+
+from dataclasses import dataclass
+
+@dataclass
+class ModuleType:
+    GbRule: bool = False
+    GbRule_GbRule: bool = False
+    GbRule_Egon: bool = False
+    GbFeature: bool = False
+    unknown: bool = False
+
+def get_moduletype(module,pass_in_format) -> ModuleType:
+    # check if this hitName is one of gbule(including egon) , if not then must be gbfeature
+    if pass_in_format == 'module_code':
+
+        if GbRuleMapper.get_id_byCode(module):
+            gbrule_hit_type_id = GbRuleMapper.get_id_byCode(module)
+            # If gbrule_hit_type_id exists, gbrule/egon is always True
+            # then we cleanly separate the sub-types using a ternary operator
+            return ModuleType(
+                    GbRule=True,
+                    GbRule_Egon=(gbrule_hit_type_id == 11),
+                    GbRule_GbRule=(gbrule_hit_type_id != 11)
+            )
+        elif GbFeatureMapper.get_id_byCode(module):
+            return ModuleType(GbFeature=True)  # instantiates the class (change gbfeature to true)
+        else:
+            return ModuleType(unknown=True)  # not system module
+
+    if pass_in_format == 'updatedby_module':
+        if GbRuleMapper.get_id_by_updByName(module):
+            gbrule_hit_type_id = GbRuleMapper.get_id_by_updByName(module)
+            # If gbrule_hit_type_id exists, gbrule/egon is always True
+            # then we cleanly separate the sub-types using a ternary operator
+            return ModuleType(
+                    GbRule=True,
+                    GbRule_Egon=(gbrule_hit_type_id == 11),
+                    GbRule_GbRule=(gbrule_hit_type_id != 11)
+            )
+        elif GbFeatureMapper.get_id_by_updByName(module):
+            return ModuleType(GbFeature=True)  # instantiates the class (change gbfeature to true)
+        else:
+            return ModuleType(unknown=True)  # # not system module
+
+    return ModuleType(unknown=True)
+
+def is_system(updatedby):
+    #if  updatedby and updatedby.startswith('GB_') and not updatedby.startswith('GB_MemberList'):
+    if  (GbRuleMapper.get_id_by_updByName(updatedby) is not None   or   GbFeatureMapper.get_id_byCode(updatedby) is not None ):
+        return True
+    return False
+
+#@@change571 once implemented, change gbrule & egon to 24, 'hours'
+def get_module_validFromDate_utc(updatedBy_module,module_format):
+    # pass in moduleName, and it returns a class object
+    ThisModuleTypeIs = get_moduletype(updatedBy_module,module_format)  # pass in the lastupdby Name(can be system can be user)
+    if ThisModuleTypeIs.GbRule_GbRule:
+        validFrom_utc = helper.get_past_date_UTC(3,'months')
+    elif ThisModuleTypeIs.GbRule_Egon:
+        validFrom_utc = helper.get_past_date_UTC(3, 'months')
+    elif ThisModuleTypeIs.GbFeature:
+        validFrom_utc = helper.get_past_date_UTC(3, 'months')
+    else:
+        pytest.xfail(f"unable to check validity period for this {module_format} --> '{updatedBy_module}' ")
+    return validFrom_utc
+
+def check_if_within_validity_period(validFrom_utc, updatedDate_utc):
+    if updatedDate_utc >= validFrom_utc: # both are in <class 'datetime.datetime'> format  (eg. 2026-07-04 13:44:53 UTC)
+        return True # within validity period
+    else:
+        return False

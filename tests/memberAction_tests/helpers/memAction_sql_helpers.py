@@ -1,10 +1,11 @@
 
 import pytest
 from mysql.connector import Error
-import os
-from tests.memberAction_tests.helpers.myHelperFunc import call_api, get_new_date_UTC, parse_updatedby
+from datetime import datetime, timezone,timedelta
+import tests.memberAction_tests.helpers.myHelperFunc as helper
 from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
 import tests.memberAction_tests.memberAction_Constants as action_const
+import tests.memberAction_tests.helpers.memAction_helpers as hlp
 
 def call_mySQL_query(mysql_connection, csv_filter, sql_file,
                      p_params):  # to query mysql to get memDetails, \'is to escape '
@@ -108,40 +109,49 @@ def reset_member_hits(mysql_connection, csv_filter):
     call_mySQL_query(mysql_connection, csv_filter, 'reset_mem_BetDelay_Mysql.sql', p_params)
 
 
-def modify_member_latestHit_attribute_date(mysql_connection, csv_filter):
+def modify_HitDate_or_mem_attribute_date(mysql_connection, csv_filter):
     pairs = {}
-    GbRule = False
+
     # convert prerequisite into json
-    for line in csv_filter['EditUpdByDate'].splitlines():
+    for line in csv_filter['EditUpdatedDate'].splitlines():
         key, value = line.split(":")  # split by : into string on both side
         pairs[key] = value
 
-    past_date_UTC = get_new_date_UTC(3, 'months') #get 1st day of 3 month ago
+    past_date_UTC = hlp.get_module_validFromDate_utc(pairs['module_to_Upd'],'module_code')
     if (pairs['outsideValidPeriod']).lower() == 'yes':
-        past_date_time_utc = str(past_date_UTC) + ' 03:00:00'  # 1 hour prior to 3 months ago
+        new_date_utc = past_date_UTC - timedelta(minutes=10)  # make it expired by setting it to 10 mins past expired
     else:
-        past_date_time_utc = str(past_date_UTC) + ' 04:00:00'  # exactly 3 months ago
-    if GbRuleMapper.get_id_byCode(pairs['id_to_Upd']):
-        HitType_ID = GbRuleMapper.get_id_byCode(pairs['id_to_Upd'])
-        HitType_updbyName = GbRuleMapper.get_updByName_byCode(pairs['id_to_Upd'])
-        GbRule = True
+        new_date_utc = past_date_UTC + timedelta(minutes=10)  # make it Almost expired by setting it 10 mins to expired
+
+
+    new_date_utc_string = new_date_utc.strftime("%Y-%m-%d %H:%M:%S") #convert to string
+    ThisModuleTypeIs = hlp.get_moduletype(pairs['module_to_Upd'],'module_code')
+
+    if ThisModuleTypeIs.GbRule:
+       HitType_ID = GbRuleMapper.get_id_byCode(pairs['module_to_Upd'])
+       HitType_updbyName = GbRuleMapper.get_updByName_byCode(pairs['module_to_Upd'])
     else:
-        HitType_ID = GbFeatureMapper.get_id_byCode(pairs['id_to_Upd'])
-        HitType_updbyName = GbFeatureMapper.get_updByName_byCode(pairs['id_to_Upd'])
+       HitType_ID = GbFeatureMapper.get_id_byCode(pairs['module_to_Upd'])
+       HitType_updbyName = GbFeatureMapper.get_updByName_byCode(pairs['module_to_Upd'])
+
     p_params = {
         'memberCode': csv_filter['memberCode'],
         'companyID': csv_filter['companyID'],
-        'date_to_change_UTC': past_date_time_utc,
+        'date_to_change_UTC': new_date_utc_string,
         'use_ruleID_to_update': HitType_ID,
         'use_ruleUpdByName_to_update_BD': HitType_updbyName + '%'
         # BD use updateName, so make sure cater for prefix _1 &_2
     }
-    print(f'p_params is ,{p_params}')
-    if GbRule:
-        call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_GbRuleHits_Mysql_msp.sql', p_params)
-        call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_GbRuleHits_Mysql_mspa.sql', p_params)
-    else:
-        call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_GbFeatureHits_Mysql.sql', p_params)
 
-    call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_BD_Mysql.sql', p_params)
-    call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_BLSGMemCat_Mysql.sql', p_params)
+    # update the ScoreDate,ActionDate of inputted module
+    if pairs['upd_module_DT'].lower() == 'yes':
+        if ThisModuleTypeIs.GbRule:  # gbrule & egon
+            call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_GbRuleHits_Mysql_msp.sql', p_params)
+            call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_GbRuleHits_Mysql_mspa.sql', p_params)
+        else:  # gbfeature
+            call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_GbFeatureHits_Mysql.sql', p_params)
+
+    # update the lastupdateby of member's setting(bl,sg,bd,memCat)
+    if pairs['upd_memsetting_DT'].lower() == 'yes':
+        call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_BD_Mysql.sql', p_params)
+        call_mySQL_query(mysql_connection, csv_filter, 'edit_UpdByDate_BLSGMemCat_Mysql.sql', p_params)

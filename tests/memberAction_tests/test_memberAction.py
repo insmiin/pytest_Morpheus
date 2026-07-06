@@ -7,7 +7,7 @@ import time
 import os
 import csv
 from datetime import datetime, timezone, timedelta
-from tests.memberAction_tests.helpers.myHelperFunc import call_api, get_new_date_UTC, parse_updatedby
+from tests.memberAction_tests.helpers.myHelperFunc import  parse_updatedby
 import tests.memberAction_tests.helpers.memAction_sql_helpers as qhlp
 import tests.memberAction_tests.helpers.memAction_api_helpers as ahlp
 import tests.memberAction_tests.helpers.memAction_assert_helpers as ashlp
@@ -51,8 +51,8 @@ def format_filters(csv_rows: List[Dict]) -> List[Dict]:
             "prerequisite1": row["prerequisite1"],
             "prerequisite2": row["prerequisite2"],
             "prerequisite3": row["prerequisite3"],
-            # "EditUpdByDateFlag":row["EditUpdByDateFlag"],
-            "EditUpdByDate": row["EditUpdByDate"],
+            # "EditUpdatedDateFlag":row["EditUpdatedDateFlag"],
+            "EditUpdatedDate": row["EditUpdatedDate"],
             "pre_actionOnOffFlag": row["pre_actionOnOffFlag"],  # featureOn/Off
             "post_actionOnOffFlag": row["post_actionOnOffFlag"]
         }
@@ -233,11 +233,12 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         if csv_filter['prerequisite1']:
             ahlp.initialise_member(api_session, api_session_SF, mysql_connection, csv_filter)
 
-        # to fabricate updateDate of attributes associated with latestHit(i.e  1 hit only) eg. BL/SG/MemCat/MainActiontable/ChildAction/table/BetDelay
-        # only allow to change the latesthit. it doesnt make sense if you change bl/sg/memCat updateddate prior to latesthit a
-        if csv_filter['EditUpdByDate']:
-            qhlp.modify_member_latestHit_attribute_date(mysql_connection, csv_filter)
-
+        # for outside validity period testing:
+        # to fabricate updatedDate of modulehit(mainActionTable,childActionTable) and/or updatedDate of membersetting(i.e BL/SG/BD/MemCat)
+        # for crossModule, csv i set to update hitDate only( no update on membersetting field like bl,sg,bd,memCat cox cross module only check hitdate to determine validityperiod)
+        # for singleModule, csv i set to update both hitDate and membersetting fields. (cox single use those field to determine validityperiod when lastupdby=diffModule)
+        if csv_filter['EditUpdatedDate']:
+            qhlp.modify_HitDate_or_mem_attribute_date(mysql_connection, csv_filter)
         if csv_filter['pre_actionOnOffFlag']:
             ahlp.turn_OnOff_action_featureflag(api_session, csv_filter['pre_actionOnOffFlag'])
             time.sleep(4)  # time buffer to make sure flag is updated
@@ -258,7 +259,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
             "gbMemberBetDelay": row["gbMemberBetDelay"],
             "updatedBy": updated_by,
             "prev_scoreType": prev_score_type,
-            "Bdelay_withinValidityPeriod": row["Bdelay_withinValidityPeriod"]
+            "Bdelay_updatedAt": row['updatedAt']
         }
     print('===memBetDelay_before_hit_dict:===>', memBetDelay_before_hit_dict)
 
@@ -434,22 +435,23 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         if hitObject.singleModule and NewHit_BetDelay is not None: #NewHit_BetDelay can be 0 too
             # Process each sportType of NewHit
             for sportid in BDsportIDs:
+                bd_withinValidityPeriod = False
                 bd_lastUpdBy = memBetDelay_before_hit_fmt.get(sportid, {}).get('updatedBy')
                 bd_prevScoreType = memBetDelay_before_hit_fmt.get(sportid, {}).get('prev_scoreType')
-                bd_withinValidityPeriod = memBetDelay_before_hit_fmt.get(sportid, {}).get('Bdelay_withinValidityPeriod')
                 bd_existingValue = memBetDelay_before_hit_fmt.get(sportid, {}).get('gbMemberBetDelay')
-                LastUpdatedby_system_BD = (
-                        bool(bd_lastUpdBy)
-                        and bd_lastUpdBy.startswith('GB_')
-                        and not bd_lastUpdBy.startswith('GB_MemberList')
-                )
+                LastUpdatedby_system_BD = hlp.is_system(bd_lastUpdBy)
+                if LastUpdatedby_system_BD:
+                    module_validFrom_utc = hlp.get_module_validFromDate_utc(bd_lastUpdBy,'updatedby_module')
+                    bd_withinValidityPeriod = hlp.check_if_within_validity_period(module_validFrom_utc,memBetDelay_before_hit_fmt.get(sportid, {}).get('Bdelay_updatedAt'))
+
+
 
                 # process single EGON
                 if hitObject.single_EGON:
                     # if lastUpdby=DiffModule & withinValidityPeriod & prevScoreType is not Good, use severity btw existing & new hit value.
                     # else direct update
                     if LastUpdatedby_system_BD and not is_match(bd_lastUpdBy,
-                                                                hitObject.UpdBy_Module) and bd_withinValidityPeriod == 1 and bd_prevScoreType != 'Good':
+                                                                hitObject.UpdBy_Module) and bd_withinValidityPeriod == True and bd_prevScoreType != 'Good':
                         if NewHit_BetDelay > bd_existingValue:
                             expected_betDelay_dict[sportid] = NewHit_BetDelay
                             BDerrMsg = f'bet delay failed to use most severe value btw new & existing value. behaviour Hit: singleEGON & LastUpdby=diffModule & withinValidity & LastScoreType !=good'
@@ -467,7 +469,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                         BDerrMsg = f'sport:{sportid}- no BD update is allowed. Behaviour Hit: GoodScore and Gbrule and (Lstupdby=User or DiffModule)'
                     # lastupdatedby=DiffModule & within validity period, use most severe BD btw existing and NewHit
                     elif LastUpdatedby_system_BD and not is_match(bd_lastUpdBy,
-                                                                  hitObject.UpdBy_Module) and bd_withinValidityPeriod == 1:
+                                                                  hitObject.UpdBy_Module) and bd_withinValidityPeriod == True:
                         if NewHit_BetDelay > bd_existingValue:
                             expected_betDelay_dict[sportid] = NewHit_BetDelay
                             BDerrMsg = f'BetDelay of one or more sport failed to use most severe value btw new & existing value. behaviour Hit: SingleModuleHit,LstUpdBy=DiffModule,withinvalidityPeriod'
@@ -506,9 +508,13 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                                                                     beforeHit_memCat)
             New_hit_memCat_hierarchy_ID = ahlp.get_memCat_hierarchyID(memCat_hierarchy_of_this_company['hierarchyList'],
                                                                  new_Hit_Action_MemCat)
-            memCat_lastUpdatedBy, memCat_prevScoreType = parse_updatedby(
-                memSetting_before_hit['sfMemberCategoryLastUpdatedBy'])
-            memCat_isWithinValidityPeriod = memSetting_before_hit['memCat_withinValidityPeriod']
+            memCat_lastUpdatedBy, memCat_prevScoreType = parse_updatedby(memSetting_before_hit['sfMemberCategoryLastUpdatedBy'])
+            memCat_LastUpdatedby_system = hlp.is_system(memCat_lastUpdatedBy)
+            memCat_isWithinValidityPeriod = False
+            if memCat_LastUpdatedby_system:
+                module_validFrom_utc = hlp.get_module_validFromDate_utc(memCat_lastUpdatedBy,'updatedby_module')
+                memCat_isWithinValidityPeriod = hlp.check_if_within_validity_period(module_validFrom_utc,memSetting_before_hit['sfMemberCategoryUpdatedDate'])
+
 
             # direct update with EGON:
             # For crossModule(of GBgood & hasEGON)
@@ -516,7 +522,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
             if (hitObject.cross_GBGood_hasEGON) or \
                     (
                             hitObject.single_EGON and not (not is_match(memCat_lastUpdatedBy,
-                                                                        hitObject.UpdBy_Module) and memCat_isWithinValidityPeriod == 1 and memCat_prevScoreType == 'Bad')
+                                                                        hitObject.UpdBy_Module) and memCat_isWithinValidityPeriod == True and memCat_prevScoreType == 'Bad')
                     ):
                 expected_memCat = new_Hit_Action_MemCat
                 MemCat_errMsg = f"memCategory is not being replaced with new EGON action.behaviour:{hitObject.HitSingleOrCross} ,crossType={hitObject.cross_type}"
