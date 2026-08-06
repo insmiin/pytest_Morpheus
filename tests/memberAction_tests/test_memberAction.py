@@ -221,7 +221,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
     if to_triggerActionFlag == True:
         # (Automatically not via CSV), for each member,
         # For this member, reset updDate(score,mainAction,childAction of all the hits(by setting them outside validity,so that i can reuse existing testing members & not creating new one each time)
-        # reset all member's existing BD to 0 & data to outside validity(to confirm if updatedBy need to be reset too..)
+        # reset all member's existing BD to NULL & data to outside validity(to confirm if updatedBy need to be reset too..)
         # i dint reset BL/SG/memCat yet,as initial cross/single module checking wont involved this attribute(to add if needed)
         if to_reset_member == True:
             if csv_filter['memberCode'] != prev_memberCode["value"]:
@@ -269,9 +269,9 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         ahlp.trigger_module(api_session, hitObject, csv_filter)
         print(f'===triggered done for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()}')
         if csv_filter['toActionFlag'].lower() == 'no':
-            time.sleep(40)  #
+            time.sleep(50)  #
         else:
-            time.sleep(40)  # to allow time for SF to send in and update to be reflected in GB db
+            time.sleep(50)  # to allow time for SF to send in and update to be reflected in GB db
         print(
             f'===start verifying for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()} (this time mz be after bq GBCreatedDT to work properly')
 

@@ -1,4 +1,4 @@
-import pytest
+
 import tests.memberAction_tests.helpers.myHelperFunc as helper
 from tests.utils.comparison_utils import is_match, is_LT
 from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
@@ -250,13 +250,15 @@ def get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore,type):
 
     # if got CreditScore, apply merchant limit or prioritise Flag ===  @@changeCS: this part should be done
     if (to_apply_creditScore == True and type == 'msp'):
-        if(priorValue_UpdDate or MerchValue_UpdDate):  #apply threshold if there is, else no threshold
+        if(priorValue_UpdDate or MerchValue_UpdDate):  #apply threshold if there is, else initialValue(if initalvalue is not used, then comment out else statement)
             candidates = []
             if priorValue_UpdDate:  # save down for further check only if flag is on, value exists and date exists
                 candidates.append((priorValue_UpdDate, PriorValue_rankNum))
             if MerchValue_UpdDate:
                 candidates.append((MerchValue_UpdDate, MerchValue_rankNum))
             _, threshold_rankNum = max(candidates, key=lambda x: x[0])
+        else:
+            threshold_rankNum = initial_rankNum          #<----i follow existing system to cap at initialValue. not sure what BA expected actually
     # if no CreditScore, type of threshold accordingly depends on single/cross type
     else:
         # for  (1)singleEGON or (2)GBgood_hasEGON or  or (3)GBbad_EGONbad,
@@ -394,18 +396,18 @@ def is_system(updatedby):
         return True
     return False
 
-#@@change571 once implemented, change gbrule & egon to 24, 'hours'
+
 def get_module_validFromDate_utc(updatedBy_module,module_format):
     # pass in moduleName, and it returns a class object
     ThisModuleTypeIs = get_moduletype(updatedBy_module,module_format)  # pass in the lastupdby Name(can be system can be user)
     if ThisModuleTypeIs.GbRule_GbRule:
-        validFrom_utc = helper.get_past_date_UTC(3,'months')
+        validFrom_utc = helper.get_past_date_UTC(24,'hours')
     elif ThisModuleTypeIs.GbRule_Egon:
-        validFrom_utc = helper.get_past_date_UTC(3, 'months')
+        validFrom_utc = helper.get_past_date_UTC(12, 'hours')
     elif ThisModuleTypeIs.GbFeature:
         validFrom_utc = helper.get_past_date_UTC(3, 'months')
     else:
-        pytest.xfail(f"unable to check validity period for this {module_format} --> '{updatedBy_module}' ")
+        raise ValueError("unable to check validity period for this {module_format} --> '{updatedBy_module}' ")
     return validFrom_utc
 
 def check_if_within_validity_period(validFrom_utc, updatedDate_utc):

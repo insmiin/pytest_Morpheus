@@ -1,7 +1,7 @@
 notes(not used),traceability,testcase,memberCode,companyID,hitType,gbRuleScore,toActionFlag,prerequisite1,prerequisite2,prerequisite3,EditUpdatedDate,pre_actionOnOffFlag,post_actionOnOffFlag,
 "*byUser:yes is to manual trigger from GB
 *byUser:no is to manual trigger as Merchant from SFBO
-*byUser:no_sqledit is only use to replace 'byUser:no' when merchant upgrade cannot proceed",,1,gbmock_test001,3450,EGON,50,yes,,,,,,,
+*byUser:no_sqledit is only use to replace 'byUser:no' when merchant upgrade cannot proceed",,,gbmock_test001,3450,EGON,50,yes,,,,,,,
 "**to manual trigger using PG group,eg 'initialise resetA'(165) & 'BetDelay 1'(275)
 all value muz tally with PG group. Except For 999, can put empty,py will change to 999
 
@@ -431,6 +431,31 @@ isManualRevised:0",,,,,,
 module_to_Upd:EGON
 upd_module_DT:yes
 upd_memsetting_DT:no",,,
+1,scn#2_tc#11,,gbmock_t3442n059,3442,TWM - Real Basketball,50,yes,"byUser:yes
+memberSettingProfileID:1
+spreadGroupID:1
+memberCategoryID:5
+isAdvised:0
+memberProfileGroupID:
+isManualRevised:0",,,,,,
+2,,,gbmock_t3442n059,3442,MBR - Real Basketball,50,yes,,,,,,,
+3,,,gbmock_t3442n059,3442,EGON,50,yes,,,,"outsideValidPeriod:yes
+module_to_Upd:MBR - Real Basketball
+upd_module_DT:yes
+upd_memsetting_DT:no",,,
+4,scn#2_tc#12,,gbmock_t3442n060,3442,EGON,50,yes,"byUser:yes
+memberSettingProfileID:1
+spreadGroupID:1
+memberCategoryID:5
+isAdvised:0
+memberProfileGroupID:
+isManualRevised:0",,,,,,
+5,,,gbmock_t3442n060,3442,Arber - Real BB,60,yes,,,,,,,
+6,,,gbmock_t3442n060,3442,TWM - Real Basketball,50,yes,,,,,,,
+7,,,gbmock_t3442n060,3442,TWM - Real Basketball,50,yes,,,,"outsideValidPeriod:yes
+module_to_Upd:Arber - Real BB
+upd_module_DT:yes
+upd_memsetting_DT:no",,,
 ,scn#3_tc#1,,gbmock_t3442n024,3442,TWM - Real Basketball,70,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
@@ -745,7 +770,23 @@ memberProfileGroupID:
 isManualRevised:0",,,,,,
 ,,,gbmock_t3442n021,3442,FAMember - Invalid Key,,action #2,,,,,,,
 ,,,gbmock_t3442n021,3442,EGON,50,yes,,,,,,,
-,scn#4_tc#6,,gbmock_t3442n015,3442,EGON,50,yes,"byUser:yes
+8,scn#4_tc#6,8,gbmock_t3442n071,3442,FAMember - Invalid Key,,action #1,"byUser:yes
+memberSettingProfileID:1
+spreadGroupID:1
+memberCategoryID:5
+isAdvised:0
+memberProfileGroupID:
+isManualRevised:0",,,,,,
+9,,9,gbmock_t3442n071,3442,ISBBR - Real Basketball,,action #1,,,,,,,
+10,,10,gbmock_t3442n071,3442,EGON,50,yes,,,,"outsideValidPeriod:no
+module_to_Upd:ISBBR - Real Basketball
+upd_module_DT:yes
+upd_memsetting_DT:no",,,
+11,,11,gbmock_t3442n071,3442,EGON,50,yes,,,,"outsideValidPeriod:yes
+module_to_Upd:ISBBR - Real Basketball
+upd_module_DT:yes
+upd_memsetting_DT:no",,,
+,scn#4_tc#7,,gbmock_t3442n015,3442,EGON,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
@@ -754,7 +795,7 @@ memberProfileGroupID:
 isManualRevised:0",,,,,,10
 ,,,gbmock_t3442n015,3442,TWM - Real Basketball,50,yes,,,,,,,11
 ,,,gbmock_t3442n015,3442,Arber - Real BB,60,yes,,,,,,,12
-,scn#4_tc#6(feature),,gbmock_t3442n031,3442,EGON,50,yes,"byUser:yes
+,scn#4_tc#7(feature),,gbmock_t3442n031,3442,EGON,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
@@ -769,7 +810,7 @@ memberCategoryID:1
 isAdvised:
 memberProfileGroupID:
 isManualRevised:0",,,,,,15
-,scn#4_tc#7,,gbmock_t3442n016,3442,TWM - Real Basketball,50,yes,"byUser:yes
+,scn#4_tc#8,,gbmock_t3442n016,3442,TWM - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
@@ -778,7 +819,7 @@ memberProfileGroupID:
 isManualRevised:0",,,,,,16
 ,,,gbmock_t3442n016,3442,EGON,50,yes,,,,,,,17
 ,,,gbmock_t3442n016,3442,MBR - Real Basketball,70,yes,,,,,,,18
-,scn#4_tc#8,,gbmock_t3442n017,3442,TWM - Real Basketball,70,yes,"byUser:yes
+,scn#4_tc#9,,gbmock_t3442n017,3442,TWM - Real Basketball,70,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
@@ -791,7 +832,7 @@ isManualRevised:0",,,,,,19
 module_to_Upd:TWM - Real Basketball
 upd_module_DT:yes
 upd_memsetting_DT:no",,,22
-,scn#4_tc#9,,gbmock_t3442n018,3442,EGON,50,yes,"byUser:yes
+,scn#4_tc#10,,gbmock_t3442n018,3442,EGON,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
@@ -799,7 +840,7 @@ isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,23
 ,,,gbmock_t3442n018,3442,TWM - Real Basketball,70,yes,,,,,,,24
-,"scn#4_tc#10a_merch
+,"scn#4_tc#11a_merch
 
 ",,gbmock_t3442mer022,3442,EGON,10,yes,"byUser:yes
 memberSettingProfileID:4
@@ -815,7 +856,7 @@ isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,
 ,,,gbmock_t3442mer022,3442,TWM - Real Basketball,70,yes,,,,,,,
-,"scn#4_tc#10b_merch
+,"scn#4_tc#11b_merch
 
 ",,gbmock_t3442mer027,3442,EGON,10,yes,"byUser:yes
 memberSettingProfileID:4
@@ -831,7 +872,7 @@ isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,25
 ,,,gbmock_t3442mer027,3442,TWM - Real Basketball,70,yes,,,,,,,26
-,"scn#4_tc#10c_merch
+,"scn#4_tc#11c_merch
 
 ",,gbmock_t3442mer025,3442,EGON,10,yes,"byUser:no
 memberSettingProfileID:18
@@ -847,7 +888,7 @@ isAdvised:
 memberProfileGroupID:
 isManualRevised:1",,,,,
 ,,,gbmock_t3442mer025,3442,TWM - Real Basketball,70,yes,,,,,,,
-,scn#4_tc#10d_merch,,gbmock_t3442mer023,3442,EGON,10,yes,"byUser:no
+,scn#4_tc#11d_merch,,gbmock_t3442mer023,3442,EGON,10,yes,"byUser:no
 memberSettingProfileID:18
 spreadGroupID:1
 memberCategoryID:
@@ -867,7 +908,7 @@ isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,27
 ,,,gbmock_t3442mer023,3442,TWM - Real Basketball,70,yes,,,,,,,28
-,scn#4_tc#10e_merch,,gbmock_t3442mer028,3442,EGON,10,yes,"byUser:no
+,scn#4_tc#11e_merch,,gbmock_t3442mer028,3442,EGON,10,yes,"byUser:no
 memberSettingProfileID:18
 spreadGroupID:1
 memberCategoryID:
@@ -887,7 +928,7 @@ isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,
 ,,,gbmock_t3442mer028,3442,TWM - Real Basketball,70,yes,,,,,,,
-,scn#4_tc#10f,,gbmock_t3442n039,3442,EGON,20,yes,"byUser:yes
+,scn#4_tc#11f,,gbmock_t3442n039,3442,EGON,20,yes,"byUser:yes
 memberSettingProfileID:5
 spreadGroupID:6
 memberCategoryID:1
@@ -902,7 +943,7 @@ memberCategoryID:1
 isAdvised:
 memberProfileGroupID:
 isManualRevised:1",,,,,,31
-,scn#4_tc#11,,gbmock_t3442n019,3442,EGON,50,yes,"byUser:yes
+,scn#4_tc#12,,gbmock_t3442n019,3442,EGON,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
@@ -922,7 +963,7 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:208
 isManualRevised:",,,,,33
-,scn#4_tc#12,,gbmock_t3442n038,3442,TWM - Real Basketball,70,yes,"byUser:yes
+,scn#4_tc#13,,gbmock_t3442n038,3442,TWM - Real Basketball,70,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 memberCategoryID:5
