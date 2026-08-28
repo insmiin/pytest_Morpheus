@@ -8,8 +8,9 @@ sys.path.insert(0, root_dir)
 from tests.utils.comparison_utils import is_match,is_match,is_GT,is_LT,is_LTE,is_GTE
 from datetime import datetime, timezone, timedelta
 from dateutil.relativedelta import relativedelta
-from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
+import logging
 
+logger = logging.getLogger(__name__)
 
 def call_api(api_session, who: str,method: str, url: str, json_data: Optional[Dict] = None) -> requests.Response:
     """Make an API request."""

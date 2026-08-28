@@ -10,9 +10,6 @@ from tests.utils.comparison_utils import is_match, is_LT
 from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
 import warnings
 import tests.memberAction_tests.memberAction_Constants as action_const
-import logging
-
-logger = logging.getLogger(__name__)
 
 def get_MemCat_Hierarchy(companyName, api_MemHierarchyGroupList, api_session):
     '''
@@ -75,8 +72,7 @@ def get_action(api_session, hitObject, companyName, ruleScore):
         new_BDSportGroupIDs = [BDsportgroup["sportGroupID"] for BDsportgroup in betdelayGroupList]  # [1000,1001,-1]
         new_BDSportGroupIDs = [
             -1] if -1 in new_BDSportGroupIDs else new_BDSportGroupIDs  # if has -1 then [-1] else remain [1001,1002]
-        #print(f"SP/PG ui sportGgroup is ,", new_BDSportGroupIDs)
-        logger.info(f"SP/PG ui sportGgroup is ==> {new_BDSportGroupIDs}")
+        print(f"SP/PG ui sportGgroup is ,", new_BDSportGroupIDs)
     elif hitObject.hitGbFeature:
         url = f"{const.API_BASE_URL}/MemberSetting/GetMemberProfileGroupList"
         data = {"memberProfileGroupName": "", "status": 1, "gbFeatureModules": [hitObject.HitID], "page": 1,
@@ -149,22 +145,22 @@ def turn_OnOff_action_featureflag(api_session, csv_featureOnOff_actionFlag):
     assert response.status_code == 200, f"calling to FeatureOnOff_action flag update returns {response.status_code} "
 
 
-def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,prev_memberCode2):
+def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter):
     for i in range(1, 4):
         prerequisite = f"prerequisite{i}"
         if not csv_filter[prerequisite]:
             # return early if the rest of the pre-req is empty
             return
 
-        # CONVERT CSV PREREQUISITE INTO JSON FORMAT
         pairs = {}
+        # CONVERT CSV PREREQUISITE INTO JSON FORMAT
         for line in csv_filter[prerequisite].splitlines():
             key, value = line.split(":")  # split by : into string on both side
             # handling when parameter is empty
             if value == '':
                 # preset empty to None
                 pairs[key] = None
-                # (for GBapi only) convert empty  to 999(no change) ,except for ProfileGroup field which should remain empty/none
+                # for GBapi only, convert empty instead to 999(no change) ,except for ProfileGroup which should remain empty/none
                 if pairs['byUser'].lower() == 'yes' and key != 'memberProfileGroupID':
                     pairs[key] = 999
             elif key == 'byUser':
@@ -172,116 +168,60 @@ def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,
             else:
                 pairs[key] = int(value)
 
+        # RETRIEVE MEMBER'S DATA(especially UpdatedAt_key & memberid) using GB_API(memberlisting UI).
+        url_get = f"{const.API_BASE_URL}/MemberSetting/GetMemberList"
+        data = {"dateType": 4, "dateFrom": "2025-12-11T04:00:00", "dateTo": "2025-12-12T04:00:00",
+                "companyIDs": [csv_filter['companyID']], "memberCodes": [csv_filter['memberCode']],
+                "memberFirstSourceIDs": [], "currencyCodes": [],
+                "sortBy": "TotalHitCriteria", "memberActions": [], "memberActionStatusIDs": [], "byGBFilter": True,
+                "memberStatusIDs": [], "isHousePlayerIDs": [],
+                "memberSettingProfileIDs": [], "spreadGroupIDs": [], "memberCategoryIDs": [], "isAdvisedIDs": [],
+                "profileGroupIDs": [], "isProfileGroupNull": False, "isManualRevised": None,
+                "isNotOverrideBySystem": [], "updatedBy": "", "updatedDateFrom": None, "updatedDateTo": None,
+                "byGBFeature": False, "dayRange": "7D", "bySetting": None,
+                "byOperand": None, "timezone": -4, "minMemberScore": None, "minEGONScore": None, "gbRuleIDs": [],
+                "page": 1, "pageSize": 100, "minBetDelay": None, "sportGroupIDs": [], "minAppliedCreditScore":None,"minSuggestedCreditScore":None}
 
-        #@@change559(to do. see if any changes on the request & response data after 559)
-        # 1)RETRIEVE only MEMBERID from GB_API(memberlisting UI) for subsequent API use
+        response = call_api(api_session, 'call_to_get_memberListing', 'post', url_get, data)
+        assert response.status_code == 200, f"calling to memberListing list returns {response.status_code} "
+        assert len(response.json()[
+                       'data']) == 1, f"there is no member or more than 1 similar member return in memberListing. please check"
+        mem_details = response.json()['data'][0]
 
-        # get memberid 1 time only only if membercode/coyid is different across multiple prequisites and rows) to save resources
-        if csv_filter['memberCode'] != prev_memberCode2["prev_mem"]  or csv_filter['companyID'] != prev_memberCode2["prev_coyid"]:
-            url_get = f"{const.API_BASE_URL}/MemberSetting/GetMemberList"
-            data = {"dateType": 4, "dateFrom": "2026-08-24T04:00:00", "dateTo": "2026-08-25T04:00:00",
-                    "companyIDs": [csv_filter['companyID']], "memberCodes": [csv_filter['memberCode']],
-                    "memberFirstSourceIDs": [], "currencyCodes": [],
-                    "sortBy": "TotalHitCriteria", "memberActions": [], "memberActionStatusIDs": [], "byGBFilter": True,
-                    "memberStatusIDs": [], "isHousePlayerIDs": [],
-                    "memberSettingProfileIDs": [], "spreadGroupIDs": [], "memberCategoryIDs": [], "isAdvisedIDs": [],
-                    "profileGroupIDs": [], "isProfileGroupNull": False, "isManualRevised": None,
-                    "isNotOverrideBySystem": [], "updatedBy": "", "updatedDateFrom": None, "updatedDateTo": None,
-                    "byGBFeature": False, "dayRange": "7D", "bySetting": None,
-                    "byOperand": None, "timezone": -4, "minMemberScore": None, "minEGONScore": None, "gbRuleIDs": [],
-                    "page": 1, "pageSize": 100, "minBetDelay": None, "sportGroupIDs": [], "minAppliedCreditScore": None,
-                    "minSuggestedCreditScore": None}
-
-            response = call_api(api_session, 'call_to_get_memberListing', 'post', url_get, data)
-            assert response.status_code == 200, f"calling to memberListing list returns {response.status_code} "
-            assert len(response.json()[
-                           'data']) == 1, f"there is no member or more than 1 similar member return in memberListing. please check"
-            prev_memberCode2["prev_memid"] = response.json()['data'][0]['memberID']
-            prev_memberCode2["prev_mem"] = csv_filter['memberCode']
-            prev_memberCode2["prev_coyid"] = csv_filter['companyID']
-        logger.debug("Member action details")
-        memList_memberid = prev_memberCode2["prev_memid"]
-
-
-
-        # 2)RETRIEVE MemberDetails, especially updatedAt that need to use by updateAPI later on
-        url_get = f"{const.API_BASE_URL}/MemberSetting/GetMemberSettingByMemberID"
-        data = {"memberID": memList_memberid}
-        response = call_api(api_session, 'call_to_get_memberSetting', 'post', url_get, data)
-        assert response.status_code == 200, f"calling to memberSetting list returns {response.status_code} "
-        assert response.json()['data']["memberID"] == memList_memberid, f"no member returned, please check"
-        memsetting_details = response.json()['data']
-
-
-        # OWN VALIDATION on testcase:
+        # TESTCASE SELF-VALIDATION:
         # for Manual update(compliance/merchant), you will receive warning if you try to manual update same value as existing bl/sg value.
         # script will still trigger the api, but update will be ignored by gb and might lead to unexpected test result
-        if pairs['isManualRevised'] in (1,999):  # for 0 & 999(nochange)
-            if is_match(memsetting_details['sfSpreadGroupID'], pairs['spreadGroupID']):
+        if pairs['isManualRevised'] != 1:  # for 0 & 999(nochange)
+            if is_match(mem_details['sfSpreadGroupID'], pairs['spreadGroupID']):
                 warnings.warn(UserWarning(
-                    f"Warning: ManualUpd (pairs['byUser']:{pairs['byUser']}) spread value={memsetting_details['sfSpreadGroupID']} is similar with existing value , but continuing anyway.pls review your testcase if needed"))
-            elif is_match(memsetting_details['sfMemberSettingProfileID'], pairs['memberSettingProfileID']):
+                    f"Warning: ManualUpd (pairs['byUser']:{pairs['byUser']}) spread value={mem_details['sfSpreadGroupID']} is similar with existing value , but continuing anyway.pls review your testcase if needed"))
+            elif is_match(mem_details['sfMemberSettingProfileID'], pairs['memberSettingProfileID']):
                 warnings.warn(UserWarning(
-                    f"Warning: ManualUpd (pairs['byUser']:{pairs['byUser']}) limit value={memsetting_details['sfMemberSettingProfileID']} is similar with existing value , but continuing anyway. pls review your testcase if needed"))
+                    f"Warning: ManualUpd (pairs['byUser']:{pairs['byUser']}) limit value={mem_details['sfMemberSettingProfileID']} is similar with existing value , but continuing anyway. pls review your testcase if needed"))
 
-        # 3)UPDATE Member Details
-        #   if by=COMPLIANCE/USER ,via GBmemberListing UI
+        # PROCESS UPDATE by COMPLIANCE (this trigger from GB member listing)
         if pairs['byUser'].lower() == 'yes':
+
             if pairs['isManualRevised'] == 1 and (
                     pairs['memberSettingProfileID'] == 999 or pairs['spreadGroupID'] == 999):
                 pytest.xfail("when isManualFlag is ON, both BL or SG mz have value")
-            # @@change559 -(to do, isManualRevised is it 2, see if name like RealSocBD in csv need to change follow name use in membersetting edit API)
-            elif pairs['isManualRevised'] == 2 and (
-                    pairs['memberSettingProfileID'] == 999 or pairs['spreadGroupID'] == 999 or pairs['RealSocBD'] ==999 or pairs['RealBbBD'] ==999 or pairs['CyberBD'] ==999 or pairs['OthersBD'] ==999):
-                pytest.xfail("when isManualFlag_All is ON, all BL & SG & BD mz have value")
 
-
-            # dynamically create betDelaySportGroupList field that is similar in UpdateMemberByID API request
-            sport_group_updated_at = {
-                item["sportGroupID"]: item["updatedAt"]
-                for item in memsetting_details["betDelaySportGroupList"]
-            }  #{1000: '2026-08-24T04:14:57', 1001: '2026-08-24T04:14:57', 1002: '2026-08-24T04:14:57', 1003: '2026-08-24T04:14:57'}
-
-            betDelaySportGroupList = []
-            sport_groups = [
-                (1001, "Real Soccer", "RealSocBD"),
-                (1002, "Real Basketball", "RealBbBD"),
-                (1003, "Cyber Soccer and Cyber Basketball", "CyberBD"),
-                (1000, "All Other Sports", "OthersBD"),
-            ]
-            for sport_group_id, sport_group_name, pair_key in sport_groups:
-                if pairs[pair_key] != 999:
-                    betDelaySportGroupList.append({
-                        "sportGroupID": sport_group_id,
-                        "sportGroupName": sport_group_name,
-                        "gbMemberBetDelay": pairs[pair_key],
-                        "updatedAt": sport_group_updated_at.get(sport_group_id)
-                    })
-
-            # LASTLY, TRIGGER API TO UPDATE MEMBER DETAILS
+            # UPDATE MEMBER DETAILS
             # !!memberProfileGroupUpdatedAt i default d value to d one belong to PG 'Reset_Initialise A' as it is more commonly used.(to review)
             # !!if wanna use other PG, pls update accordingly. the system will check
             url_upd = f"{const.API_BASE_URL}/MemberSetting/UpdateMemberByID"
-            #@@change559 see where to add in BD for all sport and also updatedAt for BD(to do)
-            data = {"memberID": memList_memberid, "memberStatusID": 999, "isHousePlayer": 999,
+            data = {"memberID": mem_details['memberID'], "memberStatusID": 999, "isHousePlayer": 999,
                     "memberSettingProfileID": pairs['memberSettingProfileID'],
                     "spreadGroupID": pairs['spreadGroupID'], "memberCategoryID": pairs['memberCategoryID'],
                     "isAdvised": pairs['isAdvised'], "isNotifyMerchant": 0,
                     "memberProfileGroupID": pairs['memberProfileGroupID'], "isNotOverrideBySystem": 999,
                     "updatedBy": "admin.qa2", "memberProfileGroupUpdatedAt": "2024-12-30T01:32:45",
-                    "isManualRevised": pairs['isManualRevised'], "updatedAt": memsetting_details['updatedAt'],"appliedCreditScore":None,
-                    "isCreditScoreManualRevised":0,
-                    "betDelaySportGroupList":betDelaySportGroupList
-                    }
-                    #"betDelaySportGroupList":[{"sportGroupID":1001,"sportGroupName":"Real Soccer","gbMemberBetDelay":pairs['RealSocBD'],"updatedAt":memlist_details['maxUpdatedAt']},
-                    #                          {"sportGroupID":1002,"sportGroupName":"Real Basketball","gbMemberBetDelay":pairs['RealBbBD'],"updatedAt":memlist_details['maxUpdatedAt']},
-                    #                          {"sportGroupID":1003,"sportGroupName":"Cyber Soccer and Cyber Basketball","gbMemberBetDelay":pairs['CyberBD'],"updatedAt":memlist_details['maxUpdatedAt']},
-                    #                          {"sportGroupID":1000,"sportGroupName":"All Other Sports","gbMemberBetDelay":pairs['OthersBD'],"updatedAt":memlist_details['maxUpdatedAt']}]
-                    #                          }
+                    "isManualRevised": pairs['isManualRevised'], "updatedAt": mem_details['maxUpdatedAt'],"appliedCreditScore":None,"isCreditScoreManualRevised":0}
             response = call_api(api_session, 'call_to_update_memberListing', 'post', url_upd, data)
             assert response.status_code == 200, f"calling to memberListing update returns {response.status_code} "
             assert response.json()['result'] == True, f'error: {response.json()['message']}'
-            time.sleep(60)
+            time.sleep(40)
+
 
         # PROCESS UPDATE by MERCHANT, 2 methods to do it:
         # (1) as merchant, trigger from SFBO (by triggering SF_API) [byuser=no] OR
@@ -299,6 +239,13 @@ def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,
         # in case i can no longer use 'GB_xxx' to by pass, then just use method (2)[byuser='no_sqledit']
         # ============
         elif pairs['byUser'].lower() in ('no', 'no_sqledit'):
+            # # get memberid
+            # url_get = f"{const.API_BASE_URL_SF}/Api/Member/GetMemberIdbyMemberCode"
+            # data = {"CompanyId": csv_filter['companyID'],"MemberCode": csv_filter['memberCode']}
+            # response = call_api(api_session_SF, 'call_SFAPI_to_get_memberid', 'post', url_get, data)
+            # assert response.status_code == 200, f"calling to SFAPI_to_get_memberid returns {response.status_code} "
+            # assert response.json()['Code'] == 100 and response.json()['Result']['Key'] !=0, f" SFAPI_to_get_memberid has no memberid returned. please check"
+            # memberid = response.json()['Result']['Key']
 
             url_get = f"{const.API_BASE_URL_SF}/Api/Member/UpdateMemberSettingByBatch"
             if pairs['byUser'].lower() == 'no':
@@ -308,7 +255,7 @@ def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,
                 p_isGB = True
                 p_updatedby = 'GB_BYmerchant_SQLedit'
             data = {
-                "MemberSettingList": [{"CompanyId": csv_filter['companyID'], "MemberId": memList_memberid,
+                "MemberSettingList": [{"CompanyId": csv_filter['companyID'], "MemberId": mem_details['memberID'],
                                        "MemberCode": csv_filter['memberCode'],
                                        "UpdatedBy": p_updatedby,
                                        # use 'GB_*' to bypass SF logic of merchant upgrade restriction
@@ -325,7 +272,7 @@ def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,
             errormsg = response.json()['Result'][0]['ApiResponse']['Message']
             assert response.json()[
                        'Code'] == 100 and errorcode == 100, f" SFAPI_to_upd_members has errormsg:{errormsg}. please check"
-            time.sleep(60)
+            time.sleep(40)
 
             # after updateing necessary field using compliance, we run query to fabricate data in mysql to make it look like it is by merchant
             if pairs['byUser'].lower() == 'no_sqledit':
@@ -367,7 +314,7 @@ def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,
                     p_IsSpreadByMerchant = 1
                     query_msp_spread += query_spread
                 p_params = {
-                    'memberID': memList_memberid,
+                    'memberID': mem_details['memberID'],
                     'mspUpdatedDt': p_mspUpdatedDt,
                     # in case only spread value is provided, this field wont be used at all. as msp and spread query are separated
                     'spreadUpdatedDt': p_spreadUpdatedDt,

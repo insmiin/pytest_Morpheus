@@ -13,7 +13,9 @@ from tests.memberAction_tests.helpers.myHelperFunc import call_api
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, root_dir)
 from mappingModule import SportGroupMapper
+import logging
 
+logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session")
 def mysql_connection():
@@ -195,7 +197,13 @@ def api_CalcBL_CSfinalBL_mapping(api_session):
 
 @pytest.fixture(scope="session")
 def prev_memberCode():
+    # to assign initial value of same section. used by member reset logic (reset member only 1 time, i.e first row of that member)
     return {"value": None}
+
+@pytest.fixture(scope="session")
+def prev_memberCode2():
+    # to assign initial value of same section. used by member prerequisite update logic(retrieve memberid one time only for same membercode)
+    return {"prev_mem": None,"prev_coyid":None,"prev_memid":None}
 
 @pytest.fixture(scope="session")
 def sportGroup_sportIDs_UImap_dict(mysql_connection):

@@ -6,6 +6,9 @@ import tests.memberAction_tests.helpers.myHelperFunc as helper
 from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
 import tests.memberAction_tests.memberAction_Constants as action_const
 import tests.memberAction_tests.helpers.memAction_helpers as hlp
+import logging
+
+logger = logging.getLogger(__name__)
 
 def call_mySQL_query(mysql_connection, csv_filter, sql_file,
                      p_params):  # to query mysql to get memDetails, \'is to escape '

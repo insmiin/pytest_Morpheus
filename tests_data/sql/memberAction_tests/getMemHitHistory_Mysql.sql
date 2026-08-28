@@ -8,18 +8,18 @@ msp.createdAt,msp.createdBy,msp.updatedAt,DATE_SUB(msp.updatedAt, INTERVAL 4 HOU
 msp.score latest_score,msp.lascore lastWfActn_score, msp.laUpdatedAt lastWfActn_updatedAt,
 case when -- use ms.updateAt to filter GBrule & egon validityperiod
          (
-			(ms.gbRuleID =11 and DATE_SUB(ms.updatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 12 HOUR) )  -- for egon
+			(ms.gbRuleID =11 and DATE_SUB(ms.updatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR) )  -- tally with PP_EgonValidityPeriod
 				or
-			(ms.gbRuleID !=11 and DATE_SUB(ms.updatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR)  )
+			(ms.gbRuleID !=11 and DATE_SUB(ms.updatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR)  )  -- tally with PP_RuleValidityPeriod
          )
      and (
            (actionStatusID Not in ({action_disallowed}))
              or
 		   (actionstatusID = 100 and
 				(
-					(ms.gbRuleID =11 and DATE_SUB(msp.laUpdatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 12 HOUR)  )  -- for egon
+					(ms.gbRuleID =11 and DATE_SUB(msp.laUpdatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR)  )  -- tally with PP_EgonValidityPeriod
 						or
-					(ms.gbRuleID !=11 and DATE_SUB(msp.laUpdatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR)  )
+					(ms.gbRuleID !=11 and DATE_SUB(msp.laUpdatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR)  ) -- tally with PP_RuleValidityPeriod
                 )
 			)
 		 )
@@ -31,18 +31,18 @@ left join  displaynameenum eAct on msp.actionStatusID = eAct.enumID and eAct.enu
 -- include only hits that are within validity period  AND Include hits except status 95, 96, 98, 99, and 100 —but allow status 100 if the updatedate of lasthitWithAction is within validityPeriod
 where
     (
-		(ms.gbRuleID =11 and DATE_SUB(ms.updatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 12 HOUR) ) -- for egon
+		(ms.gbRuleID =11 and DATE_SUB(ms.updatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR) ) -- tally with PP_EgonValidityPeriod
 				or
-		(ms.gbRuleID !=11 and DATE_SUB(ms.updatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR)  )
+		(ms.gbRuleID !=11 and DATE_SUB(ms.updatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR)  ) -- tally with PP_RuleValidityPeriod
 	)
 and (
       (actionStatusID Not in ({actionID_to_filter}))
        or
       (actionstatusID = 100 and
 				(
-					(ms.gbRuleID =11 and DATE_SUB(msp.laUpdatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 12 HOUR) ) -- for egon
+					(ms.gbRuleID =11 and DATE_SUB(msp.laUpdatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR) ) -- tally with PP_EgonValidityPeriod
 						or
-					(ms.gbRuleID !=11 and DATE_SUB(msp.laUpdatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR) )
+					(ms.gbRuleID !=11 and DATE_SUB(msp.laUpdatedAt, INTERVAL 4 HOUR) >= DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 24 HOUR) ) -- tally with PP_RuleValidityPeriod
                 )
 	  )
 	)
@@ -51,13 +51,13 @@ and (
 select m.membercode,m.companyid,mpg.memberid,' ' as scr_batchID ,' ' as scr_gbRuleID,' ' as src_gbruleName,moduleID as prof_moduleID,emod.name as prof_featureName,actionStatusID,eAct.displayName as displayName,
  mpg.createdAt,mpg.createdBy,mpg.updatedAt,DATE_SUB(mpg.updatedAt, INTERVAL 4 HOUR) updatedAt_GMTMinus4,mpg.updatedby,' ' as scr_gbRuleBandID,' ' as scr_scoreProfileID, ' ' as prof_profileGroupID,
  ' ' as latest_score, ' ' as lastWfActn_score, ' ' as lastWfActn_updatedAt,
-case when DATE_SUB(mpg.updatedAt, INTERVAL 4 HOUR) >= DATE_FORMAT(DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 3 MONTH), '%Y-%m-01 00:00:00')
+case when DATE_SUB(mpg.updatedAt, INTERVAL 4 HOUR) >= DATE_FORMAT(DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 3 MONTH), '%Y-%m-01 00:00:00') -- mz tally with PP_FeatureValidityPeriod
      and actionStatusID Not in ({action_disallowed})
      then 'true' else 'false' end as has_action_to_verify
 from memberprofilegroups mpg inner join getMemberid m on mpg.memberid=m.memberid
 left join  displaynameenum emod on mpg.moduleid = emod.enumID and emod.enumName = 'GBFeatureModuleEnum'
 left join  displaynameenum eAct on mpg.actionStatusID = eAct.enumID and eAct.enumName = 'GBActionStatusEnum'
-where DATE_SUB(mpg.updatedAt, INTERVAL 4 HOUR) >= DATE_FORMAT(DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 3 MONTH), '%Y-%m-01 00:00:00')
+where DATE_SUB(mpg.updatedAt, INTERVAL 4 HOUR) >= DATE_FORMAT(DATE_SUB(DATE_SUB(current_timestamp(), INTERVAL 4 HOUR), INTERVAL 3 MONTH), '%Y-%m-01 00:00:00') -- mz tally with PP_FeatureValidityPeriod
 and actionStatusID Not in ({actionID_to_filter}) -- GBfeature has no 100 anyway
 )
 ,MemHitGbRulesActions as (

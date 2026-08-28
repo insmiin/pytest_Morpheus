@@ -1,57 +1,5 @@
 notes(not used),traceability,testcase,memberCode,companyID,hitType,gbRuleScore,toActionFlag,prerequisite1,prerequisite2,prerequisite3,EditUpdatedDate,pre_actionOnOffFlag,post_actionOnOffFlag
-,,1,gbmock_t3449n040,3449,MBR - Real Basketball,40,no,"byUser:yes
-memberSettingProfileID:1
-spreadGroupID:1
-RealSocBD:2
-RealBbBD:1
-CyberBD:0
-OthersBD:0
-memberCategoryID:
-isAdvised:
-memberProfileGroupID:
-isManualRevised:",,,,,
-,,,gbmock_t3449n040,3449,MBR - Real Basketball,50,no,"byUser:yes
-memberSettingProfileID:1
-spreadGroupID:1
-RealSocBD:5
-RealBbBD:2
-CyberBD:0
-OthersBD:0
-memberCategoryID:
-isAdvised:
-memberProfileGroupID:
-isManualRevised:","byUser:yes
-memberSettingProfileID:1
-spreadGroupID:1
-RealSocBD:6
-RealBbBD:2
-CyberBD:0
-OthersBD:0
-memberCategoryID:
-isAdvised:
-memberProfileGroupID:
-isManualRevised:",,,,
-,,,gbmock_t3449n041,3449,MBR - Real Basketball,30,no,"byUser:yes
-memberSettingProfileID:1
-spreadGroupID:1
-RealSocBD:5
-RealBbBD:2
-CyberBD:0
-OthersBD:0
-memberCategoryID:
-isAdvised:
-memberProfileGroupID:
-isManualRevised:","byUser:yes
-memberSettingProfileID:1
-spreadGroupID:1
-RealSocBD:6
-RealBbBD:2
-CyberBD:0
-OthersBD:0
-memberCategoryID:
-isAdvised:
-memberProfileGroupID:
-isManualRevised:",,,,
+,,,gbmock_t3449n061,3449,MBR - Real Basketball,50,yes,,,,,,
 ,,,gbmock_t3449n025,3449,MBR - Real Basketball,60,no,,,,,,
 "*seq of triggering
   1)initialisation(auto in system, not in this CSV)
@@ -60,10 +8,6 @@ isManualRevised:",,,,
   4)post_actionOnOffFlag",single_Scn#1_tc#0,,gbmock_t3449n001,3449,MBR - Real Basketball,0,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:5
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -80,84 +24,33 @@ due to bugs/design:(1) when update from compliance, sys upd only into mysql user
 ",single_Scn#1_tc#1,,gbmock_t3449n002,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:5
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0","byUser:yes
 memberSettingProfileID:
 spreadGroupID:
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:208
 isManualRevised:",,,,
 "*byUser:yes is to manual trigger from GB
 *byUser:no is to manual trigger as Merchant from SFBO
-*byUser:no_sqledit is only use to replace 'byUser:no' when merchant upgrade cannot proceed",single_Scn#1_tc#2a1(merch),,gbmock_t3449mer001,3449,MBR - Real Basketball,40,yes,"byUser:yes
+*byUser:no_sqledit is only use to replace 'byUser:no' when merchant upgrade cannot proceed",single_Scn#1_tc#2a(merch),,gbmock_t3449mer001,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:5
 spreadGroupID:6
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:1","byUser:yes
 memberSettingProfileID:
 spreadGroupID:
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:206
 isManualRevised:","byUser:no
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
-memberCategoryID:
-isAdvised:
-memberProfileGroupID:
-isManualRevised:",,,
-,single_Scn#1_tc#2a2(merch),,gbmock_t3449mer014,3449,MBR - Real Basketball,40,yes,"byUser:yes
-memberSettingProfileID:5
-spreadGroupID:6
-RealSocBD:4
-RealBbBD:4
-CyberBD:4
-OthersBD:4
-memberCategoryID:
-isAdvised:0
-memberProfileGroupID:
-isManualRevised:2","byUser:yes
-memberSettingProfileID:
-spreadGroupID:
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
-memberCategoryID:
-isAdvised:
-memberProfileGroupID:206
-isManualRevised:","byUser:no
-memberSettingProfileID:1
-spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -180,61 +73,38 @@ memberProfileGroupID:275
 isManualRevised:999",single_Scn#1_tc#2b(merch),,gbmock_t3449mer002,3449,MBR - Real Basketball,50,yes,"byUser:no
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:","byUser:yes
 memberSettingProfileID:20
 spreadGroupID:6
-RealSocBD:1
-RealBbBD:2
-CyberBD:3
-OthersBD:4
 memberCategoryID:
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,
+isManualRevised:1",,,,
 ,single_Scn#1_tc#2b1(merch),,gbmock_t3449mer012,3449,MBR - Real Basketball,40,yes,"byUser:no
 memberSettingProfileID:20
 spreadGroupID:6
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:","byUser:yes
 memberSettingProfileID:18
 spreadGroupID:1
-RealSocBD:5
-RealBbBD:5
-CyberBD:5
-OthersBD:5
+memberCategoryID:
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,
 x,single_Scn#1_tc#2b2(merch),,gbmock_t3449mer013,3449,MBR - Real Basketball,40,yes,"byUser:no
 memberSettingProfileID:20
 spreadGroupID:6
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:","byUser:yes
 memberSettingProfileID:26
 spreadGroupID:1
-RealSocBD:1
-RealBbBD:1
-CyberBD:1
-OthersBD:1
 memberCategoryID:
 isAdvised:0
 memberProfileGroupID:
@@ -248,27 +118,25 @@ memberProfileGroupID:
 isManualRevised:",single_Scn#1_tc#2c,,gbmock_t3449n028,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:7
-RealSocBD:1
-RealBbBD:2
-CyberBD:3
-OthersBD:4
 memberCategoryID:
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 "*==gbRuleScore & toActionFlag ==
 *Gbfeature can ignore
 *Gbrule must have",single_Scn#1_tc#3,,gbmock_t3449n005,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:1
-RealBbBD:1
-CyberBD:1
-OthersBD:1
 memberCategoryID:
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1","byUser:yes
+memberSettingProfileID:
+spreadGroupID:
+memberCategoryID:
+isAdvised:
+memberProfileGroupID:206
+isManualRevised:",,,,
 "*===EditUpdatedDate===
 outsideValidPeriod:no  [yes=jz expired, no=almst expired]
 module_to_Upd:EGON   [same as hitype/simulatortype]
@@ -276,28 +144,32 @@ upd_module_DT:yes     [upd hit/action date of modules?]
 upd_memsetting_DT:yes  [up bd/sg/bl/memCat of member?]",single_Scn#1_tc#4,,gbmock_t3449n006,3449,MBR - Real Basketball,30,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:5
-RealSocBD:1
-RealBbBD:1
-CyberBD:1
-OthersBD:1
 memberCategoryID:1
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:0",,,,,
+isManualRevised:0","byUser:yes
+memberSettingProfileID:
+spreadGroupID:
+memberCategoryID:
+isAdvised:
+memberProfileGroupID:206
+isManualRevised:",,,,
 "* ==pre/post_actionOnOffFlag==
 *this is for featureOnOff_action flag. Value is on or off
 flag:off
 hittype_to_Upd:Arber - Real BB",single_Scn#1_tc#5,,gbmock_t3449n007,3449,MBR - Real Basketball,30,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:5
-RealSocBD:5
-RealBbBD:5
-CyberBD:5
-OthersBD:5
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1","byUser:yes
+memberSettingProfileID:
+spreadGroupID:
+memberCategoryID:
+isAdvised:
+memberProfileGroupID:206
+isManualRevised:",,,,
 "**hitType to use:
 Arber - Real Soccer
 Arber - Real BB
@@ -317,10 +189,6 @@ ISBBR - Real Basketball",,,,,,,,,,,,,
 ,single_Scn#2_tc#1,,gbmock_t3449n008,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -332,20 +200,12 @@ gbmock_t3449n025(MBRbb)",,,gbmock_t3449n008,3449,MBR - Real Basketball,50,yes,,,
 ,single_Scn#2_tc#2(merch),,gbmock_t3449mer004,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
-isManualRevised:2","byUser:no
+isManualRevised:1","byUser:no
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -354,42 +214,26 @@ isManualRevised:",,,,
 ,single_Scn#2_tc#3(merch),,gbmock_t3449mer005,3449,MBR - Real Basketball,40,yes,"byUser:no
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:","byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:5
-RealBbBD:5
-CyberBD:1
-OthersBD:1
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
-isManualRevised:2",,,,
+isManualRevised:1",,,,
 ,,,gbmock_t3449mer005,3449,MBR - Real Basketball,60,yes,,,,,,
 7,single_Scn#2_tc#4,,gbmock_t3449n011,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:5
-RealBbBD:5
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
-isManualRevised:2","byUser:yes
+isManualRevised:1","byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:1
-RealBbBD:1
-CyberBD:1
-OthersBD:1
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -398,34 +242,22 @@ isManualRevised:",,,,
 ,single_Scn#2_tc#5,,gbmock_t3449n012,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
-isManualRevised:0",,,,,
+isManualRevised:",,,,,
 ,,,gbmock_t3449n012,3449,MBR - Real Basketball,20,yes,,,,,,
 ,single_Scn#2_tc#6,,gbmock_t3449n013,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:6
-RealBbBD:6
-CyberBD:6
-OthersBD:6
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 ,,,gbmock_t3449n013,3449,MBR - Real Basketball,10,yes,,,,,,
 ,single_Scn#2_tc#7,,gbmock_t3449n014,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -437,10 +269,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#2_tc#8,,gbmock_t3449n015,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -453,10 +281,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#2B_tc#1,,gbmock_t3449n016,3449,Arber - Real BB,20,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -469,10 +293,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#2B_tc#2,,gbmock_t3449n017,3449,Arber - Real BB,20,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -480,14 +300,10 @@ isManualRevised:0",,,,,
 ,,,gbmock_t3449n017,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:1
-RealBbBD:1
-CyberBD:1
-OthersBD:1
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 ,,,gbmock_t3449n017,3449,Arber - Real BB,30,yes,,,,,"flag:off
 hittype_to_Upd:Arber - Real BB","flag:on
 hittype_to_Upd:Arber - Real BB"
@@ -495,10 +311,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#2B_tc#4,,gbmock_t3449n018,3449,Arber - Real BB,20,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -511,10 +323,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#2B_tc#5,,gbmock_t3449n019,3449,Arber - Real BB,20,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -522,14 +330,10 @@ isManualRevised:0",,,,,
 ,,,gbmock_t3449n019,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:6
-RealBbBD:6
-CyberBD:6
-OthersBD:6
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 ,,,gbmock_t3449n019,3449,Arber - Real BB,30,yes,,,,,"flag:off
 hittype_to_Upd:Arber - Real BB","flag:on
 hittype_to_Upd:Arber - Real BB"
@@ -537,10 +341,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#2B_tc#6,,gbmock_t3449n020,3449,Arber - Real BB,20,yes,"byUser:yes
 memberSettingProfileID:2
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -553,10 +353,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#2B_tc#7,,gbmock_t3449n021,3449,Arber - Real BB,20,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -571,10 +367,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#3_tc#1a,,gbmock_t3449n022,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -586,10 +378,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#3_tc#1b,,gbmock_t3449n023,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -601,10 +389,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#3_tc#2,,gbmock_t3449n008,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -616,14 +400,10 @@ upd_memsetting_DT:yes",,
 ,single_Scn#3_tc#4,,gbmock_t3449n009,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:4
-RealBbBD:4
-CyberBD:4
-OthersBD:4
 memberCategoryID:1
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 ,,,gbmock_t3449n009,3449,MBR - Real Basketball,60,yes,,,,"outsideValidPeriod:yes
 module_to_Upd:Arber - Real BB
 upd_module_DT:yes
@@ -631,10 +411,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#3_tc#5,,gbmock_t3449n010,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:1
 isAdvised:0
 memberProfileGroupID:
@@ -646,14 +422,10 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#3_tc#6,,gbmock_t3449n011,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:4
-RealBbBD:4
-CyberBD:4
-OthersBD:4
 memberCategoryID:1
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 ,,,gbmock_t3449n011,3449,Arber - Real BB,30,yes,,,,,"flag:off
 hittype_to_Upd:Arber - Real BB","flag:on
 hittype_to_Upd:Arber - Real BB"
@@ -661,14 +433,10 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#3_tc#7,,gbmock_t3449n012,3449,Arber - Real BB,20,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 ,,,gbmock_t3449n012,3449,MBR - Real Basketball,80,yes,,,,,,
 ,,,gbmock_t3449n012,3449,Arber - Real BB,30,yes,,,,,"flag:off
 hittype_to_Upd:Arber - Real BB","flag:on
@@ -677,10 +445,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#3_tc#9,,gbmock_t3449n013,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -692,10 +456,6 @@ hittype_to_Upd:Arber - Real BB"
 ,single_Scn#3_tc#10,,gbmock_t3449n014,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -710,10 +470,6 @@ hittype_to_Upd:Arber - Real BB"
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n015,3449,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -724,23 +480,15 @@ isManualRevised:0",,,,,
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n016,3449,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:0
-RealBbBD:7
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 ,,,gbmock_t3449n016,3449,FAMember - Invalid Key,,Action#2,,,,,,
 ,"single_Scn#4_tc#3a
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n017,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -756,10 +504,6 @@ upd_memsetting_DT:yes",,
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n018,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -775,10 +519,6 @@ upd_memsetting_DT:yes",,
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n029,3449,EGON,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -794,10 +534,6 @@ upd_memsetting_DT:yes",,
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n030,3449,EGON,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -813,10 +549,6 @@ upd_memsetting_DT:yes",,
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n019,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -832,10 +564,6 @@ upd_memsetting_DT:yes",,
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n031,3449,EGON,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -849,14 +577,10 @@ upd_memsetting_DT:yes",,
 *(B4 next PG trigger, chg to invKey action2 manually & dun reset mem's Hits)",,gbmock_t3449n020,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:1
-RealBbBD:1
-CyberBD:1
-OthersBD:1
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,,
+isManualRevised:1",,,,,
 ,,,gbmock_t3449n020,3449,FAMember - Invalid Key,,Action#2,,,,"outsideValidPeriod:yes
 module_to_Upd:Arber - Real BB
 upd_module_DT:yes
@@ -865,10 +589,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#5A_tc#1,,gbmock_t3449n021,3449,EGON,30,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:5
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -876,10 +596,6 @@ isManualRevised:0",,,,,
 ,single_Scn#5A_tc#2(delete this aft 566),,gbmock_t3449n024,3449,EGON,30,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:5
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:3
 isAdvised:0
 memberProfileGroupID:
@@ -887,20 +603,12 @@ isManualRevised:0",,,,,
 ,single_Scn#5A_tc#2,,gbmock_t3449mer009,3449,EGON,30,yes,"byUser:yes
 memberSettingProfileID:6
 spreadGroupID:6
-RealSocBD:1
-RealBbBD:2
-CyberBD:3
-OthersBD:4
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2","byUser:no
+isManualRevised:1","byUser:no
 memberSettingProfileID:17
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -908,51 +616,31 @@ isManualRevised:",,,,
 ,single_Scn#5A_tc#3,,gbmock_t3449mer010,3449,EGON,30,yes,"byUser:no
 memberSettingProfileID:17
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:","byUser:yes
 memberSettingProfileID:5
 spreadGroupID:6
-RealSocBD:4
-RealBbBD:3
-CyberBD:2
-OthersBD:1
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,
+isManualRevised:1",,,,
 ,single_Scn#5A_tc#4,,gbmock_t3449mer011,3449,EGON,30,yes,"byUser:yes
 memberSettingProfileID:5
 spreadGroupID:6
-RealSocBD:1
-RealBbBD:2
-CyberBD:3
-OthersBD:4
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2","byUser:no
+isManualRevised:1","byUser:no
 memberSettingProfileID:17
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:","byUser:yes
 memberSettingProfileID:5
 spreadGroupID:5
-RealSocBD:6
-RealBbBD:6
-CyberBD:6
-OthersBD:6
 memberCategoryID:3
 isAdvised:0
 memberProfileGroupID:
@@ -960,20 +648,12 @@ isManualRevised:",,,
 ,single_Scn#5A_tc#5,,gbmock_t3449n027,3442,EGON,30,yes,"byUser:yes
 memberSettingProfileID:5
 spreadGroupID:7
-RealSocBD:1
-RealBbBD:2
-CyberBD:3
-OthersBD:4
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2","byUser:yes
+isManualRevised:1","byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:6
-RealBbBD:6
-CyberBD:6
-OthersBD:6
 memberCategoryID:3
 isAdvised:0
 memberProfileGroupID:
@@ -982,10 +662,6 @@ isManualRevised:",,,,
 ,single_Scn#5B_tc#1,,gbmock_t3449n022,3449,EGON,20,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -994,54 +670,34 @@ isManualRevised:0",,,,,
 ,single_Scn#5B_tc#2,,gbmock_t3449n023,3449,EGON,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,
 ,,,gbmock_t3449n023,3449,EGON,30,yes,,,,,,
-,single_Scn#5B_tc#3,,gbmock_t3449mer006,3449,EGON,40,yes,"byUser:no
+,single_Scn#5B_tc#3,1,gbmock_t3449mer006,3449,EGON,40,yes,"byUser:no
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:","byUser:yes
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:0
 memberProfileGroupID:
-isManualRevised:2",,,,
+isManualRevised:1",,,,
 ,,,gbmock_t3449mer006,3449,EGON,60,yes,,,,,,
 ,single_Scn#5B_tc#4,,gbmock_t3449mer007,3449,EGON,40,yes,"byUser:yes
-memberSettingProfileID:6
-spreadGroupID:5
-RealSocBD:5
-RealBbBD:5
-CyberBD:5
-OthersBD:5
+memberSettingProfileID:1
+spreadGroupID:1
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:1","byUser:no
 memberSettingProfileID:3
 spreadGroupID:3
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -1050,10 +706,6 @@ isManualRevised:",,,,
 ,single_Scn#5B_tc#5,,gbmock_t3449n001,3449,EGON,20,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1065,10 +717,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#5B_tc#6,,gbmock_t3449n002,3449,EGON,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1081,10 +729,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#5C_tc#1,,gbmock_t3449n003,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1097,20 +741,12 @@ hittype_to_Upd:MBR - Real Basketball"
 ,single_Scn#5C_tc#2,,gbmock_t3449mer008,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:2
 spreadGroupID:2
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0","byUser:no
 memberSettingProfileID:3
 spreadGroupID:1
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -1123,10 +759,6 @@ hittype_to_Upd:MBR - Real Basketball"
 ,single_Scn#5C_tc#3,,gbmock_t3449n004,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1139,10 +771,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#5C_tc#4,,gbmock_t3449n005,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1157,10 +785,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#5C_tc#4b,,gbmock_t3449n006,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1175,20 +799,12 @@ upd_memsetting_DT:yes",,
 ,single_Scn#5C_tc#5,,gbmock_t3449n014,3449,MBR - Real Basketball,40,yes,"byUser:no
 memberSettingProfileID:17
 spreadGroupID:2
-RealSocBD:
-RealBbBD:
-CyberBD:
-OthersBD:
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0","byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1200,10 +816,6 @@ hittype_to_Upd:MBR - Real Basketball"
 ,single_Scn#5C_tc#6,,gbmock_t3449n015,3449,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1218,10 +830,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#5C_tc#7,,gbmock_t3449n016,3449,MBR - Real Basketball,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1233,10 +841,6 @@ upd_memsetting_DT:yes",,
 ,single_Scn#5C_tc#8,,gbmock_t3449n033,3449,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
@@ -1249,10 +853,6 @@ upd_memsetting_DT:yes",,
 ,noActCondMet#1,,gbmock_t3449n026,3449,MBR - Real Basketball,60,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -1269,10 +869,6 @@ hittype_to_Upd:MBR - Real Basketball"
 ,noActCondMet#4,,gbmock_t3449n025,3449,MBR - Real Basketball,50,no,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -1284,10 +880,6 @@ upd_memsetting_DT:yes",,
 ,noActCondMet#5,,gbmock_t3449n025,3449,MBR - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:
@@ -1299,10 +891,6 @@ upd_memsetting_DT:yes",,
 ,noActCondMet#6,,gbmock_t3449n025,3449,MBR - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
-RealSocBD:0
-RealBbBD:0
-CyberBD:0
-OthersBD:0
 memberCategoryID:
 isAdvised:
 memberProfileGroupID:

@@ -3,9 +3,9 @@ import tests.memberAction_tests.helpers.myHelperFunc as helper
 from tests.utils.comparison_utils import is_match, is_LT
 from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
 import ast
+import logging
 
-
-
+logger = logging.getLogger(__name__)
 
 
 def get_ranking_byID(value, type):
@@ -72,7 +72,9 @@ def get_most_severe_value_from_all_moduleHits(hitObject, moduleHistory_after_hit
                     BDsportIDs.extend(sportGroup_sportIDs_UImap_dict.get(sportGroup, []))
             # print(f"sportid 1 is ,",BDsportIDs)
             for sport in BDsportIDs:  # for each sport of current looping module,  #eg [1,2,54,55]
-                if sport in betDelay_Severest_dict:  # compare BD of this sport with  mostSevere BD get so far. replace it if BD of this sport is hihger
+                # if this sportBD never exist in severest_list,directly update inside
+                # if already exist(from other module), then compare new with existing and get the most severe one
+                if sport in betDelay_Severest_dict:
                     if betDelay_Severest_dict[sport] < Module_BetDelay:
                         betDelay_Severest_dict[sport] = Module_BetDelay
                 else:  # if no most severe yet, add this as most severe
@@ -171,7 +173,7 @@ def BL_SG_Single_Module_check(memSetting_before_hit, hitObject, new_Hit_Action, 
             if is_match(new_Hit_Action['ScoreType'], 1):
                 smallest_rankNum = None  # action is not allowed
                 errMsg = f'update to {field_type} is not allowed for GoodScore and lastupdatedby is user/null'
-            else:
+            #else:
                 # (remove below in GBQAT-2384)
                 # badScore & Action is less severe, then NOAction allowed
                 # if is_GT(smallest_rankNum,threshold_rankNum):
@@ -179,11 +181,12 @@ def BL_SG_Single_Module_check(memSetting_before_hit, hitObject, new_Hit_Action, 
                 #     errMsg = f'update to {field_type} is not allowed for BadScore and newHit less severe than threshold value'
                 # else:
                 #     errMsg = f'update to {field_type} has failed for  BadScore and newHit more severe than threshold value'
-
+            elif lastUpdatedBy == None:  # lastupdated=null(usually newly created member,no action yet), remain(use newHit)
+                errMsg = f'{field_type} failed to be updated with new GBrule action'
+            else: #lastupdatedby=user
                 # badScore , only downgrade is allowed(i.e get most sever between existing value vs newHit value)
                 smallest_rankNum = get_most_severe(get_ranking_byID(existing_valueID, field_type), smallest_rankNum)
                 errMsg = f'{field_type} can only downgrade from member existing value for BadScore,LastUpdby=user/null '
-
 
         # Hit SingleModule(GBrule & GBfeature) & LastUpdatedBy=DiffModule(due to reduce from cross)
         elif lastUpdatedBy and updatedby_system and not is_match(lastUpdatedBy, hitObject.UpdBy_Module):
@@ -202,6 +205,51 @@ def BL_SG_Single_Module_check(memSetting_before_hit, hitObject, new_Hit_Action, 
             errMsg = f'this test case is not covered, please check'
     return smallest_rankNum, errMsg
 
+#@@change559(done)
+def get_threshold_bd(hitObject,memSetting_before_hit,memBetDelay_before_hit_fmt, sportid):
+    BD_threshold = None
+    BD_priorValue_UpdDate = memBetDelay_before_hit_fmt.get(sportid, {}).get('revisedGBBetDelayUpdatedDate')
+    BD_priorValue_Flag = memSetting_before_hit['isManualRevised']
+    # if priorityflag=0(off)/1(BL/SG only), priorValue for BD will still remain in mysql so better to use flag to determine if BD prior is on or off
+    # we default priorflagUpdateDate to null to exclude checking in threshold, if BD prior is off
+    if BD_priorValue_Flag != 2: # 2= has BL/SG/BD priorValue, 1= has BL/SG prior value
+        BD_priorValue_UpdDate = None
+    BD_UserValue_UpdDate = memBetDelay_before_hit_fmt.get(sportid, {}).get('GBBetDelayByUserUpdatedDate')
+    BD_UserValue = memBetDelay_before_hit_fmt.get(sportid, {}).get('GBBetDelayByUser') if BD_UserValue_UpdDate else None
+    BD_PriorValue = memBetDelay_before_hit_fmt.get(sportid, {}).get('revisedGBBetDelay')  if BD_priorValue_UpdDate else None
+
+    #=== get threshold of BD==
+    # for  (1)singleEGON or (2)GBgood_hasEGON or  or (3)GBbad_EGONbad,
+    #      use priorFlag or merchantValue(whichever latest) as cap
+    if (hitObject.single_EGON or hitObject.cross_GBGood_hasEGON or hitObject.cross_GBBad_EGONBad):
+        if (BD_priorValue_UpdDate):  # apply threshold if got, else No threshold
+            BD_candidates = []
+            if BD_priorValue_UpdDate:  # save down for further check only if flag is on, value exists and date exists
+                BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue))
+            _, BD_threshold = max(BD_candidates, key=lambda x: x[0])
+    # for (4)singleGBrule;SingleGBfeature or (5)GBonly_good (6)crossGBonly_bad ,
+    #      use UserValue or PrioritiseValue(whichever latest) as cap
+    elif ((hitObject.singleModule and not hitObject.single_EGON) or hitObject.cross_onlyGBs_noEGON_GBGood or hitObject.cross_onlyGBs_noEGON_GBBad):
+        if (BD_UserValue_UpdDate or BD_priorValue_UpdDate):  # apply threshold if there is, else initialValue
+            BD_candidates = []
+            if BD_UserValue_UpdDate:
+                BD_candidates.append((BD_UserValue_UpdDate, BD_UserValue))
+            if BD_priorValue_UpdDate:
+                BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue))
+            _, BD_threshold = max(BD_candidates, key=lambda x: x[0])
+    # for (7)GBbad_egonGood,
+    #     use UserValue or PrioritiseValue or MerchantValue(whichever latest)
+    elif (hitObject.cross_GBBad_EGONGood):
+        if (BD_UserValue_UpdDate or BD_priorValue_UpdDate):  # apply threshold if there is, else initial value
+            BD_candidates = []
+            if BD_UserValue_UpdDate:
+                BD_candidates.append((BD_UserValue_UpdDate, BD_UserValue ))
+            if BD_priorValue_UpdDate:
+                BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue ))
+            _, BD_threshold  = max(BD_candidates, key=lambda x: x[0])
+
+    # BD_threshold cannot be None/null, downstream must be able to handle None value
+    return BD_threshold
 
 def get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore,type):
     threshold_rankNum = None
@@ -209,7 +257,7 @@ def get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore,type):
     priorValue_Flag = memSetting_before_hit['isManualRevised']
     # if priorityflag is off on UI, isManualRevised will be set to 0 and PriorValue will be delete(None) in mysql.
     # so, we default priorflagUpdateDate to null to exclude checking in threshold
-    if priorValue_Flag != 1:
+    if priorValue_Flag not in (1,2):  #has BL/SG prior
         priorValue_UpdDate = None
 
     # !!! this part i hardcoded to cater for dirty data
@@ -399,13 +447,14 @@ def is_system(updatedby):
 
 def get_module_validFromDate_utc(updatedBy_module,module_format):
     # pass in moduleName, and it returns a class object
+    # periodValidity is hardcoded based on generalsetting, any changes change hardcoding in 'getMemHitHistory_Mysql.sql' too
     ThisModuleTypeIs = get_moduletype(updatedBy_module,module_format)  # pass in the lastupdby Name(can be system can be user)
     if ThisModuleTypeIs.GbRule_GbRule:
-        validFrom_utc = helper.get_past_date_UTC(24,'hours')
+        validFrom_utc = helper.get_past_date_UTC(24,'hours')   #must tally with PP_RuleValidityPeriod
     elif ThisModuleTypeIs.GbRule_Egon:
-        validFrom_utc = helper.get_past_date_UTC(12, 'hours')
+        validFrom_utc = helper.get_past_date_UTC(24, 'hours')   #must tally with PP_EgonValidityPeriod
     elif ThisModuleTypeIs.GbFeature:
-        validFrom_utc = helper.get_past_date_UTC(3, 'months')
+        validFrom_utc = helper.get_past_date_UTC(3, 'months')   #must tally with PP_FeatureValidityPeriod
     else:
         raise ValueError("unable to check validity period for this {module_format} --> '{updatedBy_module}' ")
     return validFrom_utc

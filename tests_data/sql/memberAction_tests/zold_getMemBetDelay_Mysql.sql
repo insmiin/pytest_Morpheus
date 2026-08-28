@@ -1,5 +1,4 @@
- SELECT m.membercode,m.companyid,mss.sportid,mss.gbMemberBetDelay,mss.updatedBy,mss.updatedAt,
- mss.gbBetDelayByUser,mss.gbBetDelayByUserUpdatedDate,mss.revisedGBBetDelay,mss.revisedGBBetDelayUpdatedDate
+ SELECT m.membercode,m.companyid,mss.sportid,mss.gbMemberBetDelay,mss.updatedBy,mss.updatedAt
  FROM GB_Qat.membersportsettings mss
 inner join members m on m.memberid = mss.memberid
 where m.membercode = lower(%(memberCode)s) and m.companyid = %(companyID)s

@@ -3,6 +3,9 @@ import tests.memberAction_tests.helpers.memAction_sql_helpers as qhlp
 import tests.memberAction_tests.helpers.memAction_api_helpers as ahlp
 from tests.utils.comparison_utils import is_match, is_LT
 import ast
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -18,7 +21,8 @@ def assert_new_hit_action(api_session, hitObject, companyName, mysql_connection,
                                               action_to_exclude, 'NewHit')  # list of dict
     assert len(member_new_hit) == 1, f'NewHit issue: either new hit is not successful & not saved in DB ORR there is >1 similar ModulehitType'
     new_Hit_Action = member_new_hit[0]
-    print('===new_Hit_Action:===>', new_Hit_Action)
+    #print('===new_Hit_Action:===>', new_Hit_Action)
+    logger.info(f"===new_Hit_Action:===> {new_Hit_Action}")
     assert is_match(new_Hit_Action['latest_ScoreType'],
                     UI_defined_action['UI_ScoretypeID']), f'Hit latest_ScoreType is different from UI setting'
     assert is_match(new_Hit_Action['latest_BetDelay'],

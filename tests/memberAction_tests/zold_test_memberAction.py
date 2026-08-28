@@ -1,15 +1,4 @@
-# pytest tests\memberAction_tests\test_memberAction.py -v --tb=short    (tb=short, to avoid printing whole chunck of code)
-# pytest tests\memberAction_tests\test_memberAction.py -vs --tb=short   (vs, u will see it output all print statement on console,  realtime)
-# pytest tests\memberAction_tests\test_memberAction.py -v --tb=short --log-cli-level=INFO --log-file=memberAction_test.log --log-file-level=DEBUG
-#                                           (real time, captured logger tagged with INFO&above and print on terminal under 'live log call'.
-#                                           (real time, captured logger tagged with DEBUG&above and print into file)
-#                                           (in case tc failed, pytst will auto print all available captured log either from CLI or file, and display under 'Captured log call' )
-# pytest tests\memberAction_tests\test_memberAction.py -v --tb=short --log-file=memberAction_test.log --log-file-level=INFO
-#                                           (real time, captured logger tagged with INFO&above and print on terminal under 'live log call'.
-#                                           (real time, captured logger tagged with INFO&above and print into file)
-#                                           (in case tc failed, pytst will auto print all available captured log either from CLI or file, and display under 'Captured log call' )
-#                                                     in this case, only INFO is captured in both CLI & files, so only INFO will be printed in 'captured log call'
-# DEBUG > INFO > WARNING > ERROR > CRITICAL
+# pytest test_scenarios\test_memActions\verify_ScoreAction.py -v --tb=short
 import sys
 import pytest
 from mysql.connector import Error
@@ -27,9 +16,6 @@ from tests.utils.comparison_utils import is_match, is_LT
 import memberAction_Constants as action_const
 from mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper
 import ast
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 def read_csv(csv_filename: str) -> List[Dict]:
@@ -41,8 +27,7 @@ def read_csv(csv_filename: str) -> List[Dict]:
             reader = csv.DictReader(csvfile)
             return [row for row in reader if row['testcase']]  # ignore testcase that is space or empty
     except FileNotFoundError:
-        #print(f"File not found: {csv_file}")
-        logger.info(f"File not found: {csv_file}")
+        print(f"File not found: {csv_file}")
         sys.exit(1)
 
 
@@ -93,6 +78,7 @@ def assert_ActionUpdate(hitObject, smallest_rankNum, threshold_rankNum, memSetti
                  smallest_rankNum):  # use Threshold as Action if threshold is more severe, else use Action
             smallest_rankNum = threshold_rankNum
 
+
         expected_valueID = rankingTo_valueId_method(smallest_rankNum)
         assert is_match(value_after_hit,
                         expected_valueID), f"{assert_type} expected Action is incorrect,behaviour:{hitObject.HitSingleOrCross} ,crossType={hitObject.cross_type}"
@@ -113,15 +99,12 @@ def assert_ActionUpdate(hitObject, smallest_rankNum, threshold_rankNum, memSetti
 # companies_list,api_session,mysql_connection only need to call 1 time per run
 def test_memAction(mysql_connection, companies_list, api_session, api_session_SF, api_MemHierarchyGroupList, \
                    api_CalcBL_CSfinalBL_mapping,
-                   sportGroup_sportIDs_UImap_dict, prev_memberCode, prev_memberCode2,csv_filter):
-    logger.info(f"=========================================================================================================")
-    logger.info(f"==========================================testcase_{csv_filter['testcase']}===========================================")
-    logger.info(f"=========================================================================================================")
+                   sportGroup_sportIDs_UImap_dict, prev_memberCode, csv_filter):
+
     # flag to manually control certain processing
-    to_setupmem_b4_triggerActionFlag = True #flag for me to control (auto reset  & all csv columns from prerequisites)
-    to_reset_member = True  # flag to control auto reset only.(i.e sometime if wan to continue subsequent action of SAME member, set this to false)
-    to_triggerActionFlag = True  # flag for me to control action triggering
-    apply_creditScore_FLAG = True  # this must be tally with GeneralSetting flag. all 4 flag must be on. any flag is off means False
+    to_triggerActionFlag = True  # flag for me to control triggering
+    to_reset_member = True  # sometime if wan to continue subsequent action of SAME member, set this manually to false
+    apply_creditScore_FLAG = True  # @@changeCS? see if there is a need to retrieve the flag once to determine if using CS or not
 
 
     # create a class to store all the necessary information related to NewHit
@@ -235,11 +218,11 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         assert csv_filter['toActionFlag'] != None, f"HitType is GBrule but no toActionFlag is provided in your csv file"
 
 
-    # 2  >>>>> SETUP MEMBER/ DATA PREPARATION,BASED ON CSV INPUT, BEFORE ACTION TRIGGERING STARTS   <<<<<
-    if to_setupmem_b4_triggerActionFlag == True:
+    # 2  >>>>> SETUP & DATA PREPARATION BEFORE ACTION TRIGGERING STARTS   <<<<<
+    if to_triggerActionFlag == True:
         # (Automatically not via CSV), for each member,
         # For this member, reset updDate(score,mainAction,childAction of all the hits(by setting them outside validity,so that i can reuse existing testing members & not creating new one each time)
-        # reset all member's existing BD to 0 & date to outside validity(to confirm if updatedBy need to be reset too..)
+        # reset all member's existing BD to NULL & data to outside validity(to confirm if updatedBy need to be reset too..)
         # i dint reset BL/SG/memCat yet,as initial cross/single module checking wont involved this attribute(to add if needed)
         if to_reset_member == True:
             if csv_filter['memberCode'] != prev_memberCode["value"]:
@@ -249,7 +232,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         # (initiated by csv)Before any system hit, initialise member setting by doing manual update. (both userValue & merchant update)
         # The ManualUpdate approach performs direct updates.
         if csv_filter['prerequisite1']:
-            ahlp.initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,prev_memberCode2)
+            ahlp.initialise_member(api_session, api_session_SF, mysql_connection, csv_filter)
 
         # for outside validity period testing:
         # to fabricate updatedDate of modulehit(mainActionTable,childActionTable) and/or updatedDate of membersetting(i.e BL/SG/BD/MemCat)
@@ -264,9 +247,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
 
     # 3 >>>>>  SAVE MEMBER'S SETTING (BL,SG,MemCat,isAdv,BetDelay) BEFORE HIT  <<<<<
     memSetting_before_hit = qhlp.call_mySQL_query(mysql_connection, csv_filter, "getMemDetails_Mysql.sql", None)  # 1 dict
-    logger.info(f"===memSetting_before_hit:===>   {memSetting_before_hit}")
-    logger.debug('hahahahhahahaha')
-    #print('===memSetting_before_hit:===>', memSetting_before_hit)
+    print('===memSetting_before_hit:===>', memSetting_before_hit)
     memBetDelay_before_hit = qhlp.call_mySQL_query(mysql_connection, csv_filter, 'getMemBetDelay_Mysql.sql', None)  # 1 dict
     memBetDelay_before_hit_dict = {item['sportid']: item['gbMemberBetDelay'] for item in
                                    memBetDelay_before_hit}  # dict
@@ -279,30 +260,21 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
             "gbMemberBetDelay": row["gbMemberBetDelay"],
             "updatedBy": updated_by,
             "prev_scoreType": prev_score_type,
-            "Bdelay_updatedAt": row['updatedAt'],
-            # @@change559
-            # change getMemBetDelay_Mysql.sql to retrieve all columns for BD prioritise handling(done,after 559 confirm again if columns are correct)
-            # add in these column for logic processing(done)
-            "GBBetDelayByUser": row['gbBetDelayByUser'],
-            "GBBetDelayByUserUpdatedDate":row['gbBetDelayByUserUpdatedDate'],
-            "revisedGBBetDelay":row['revisedGBBetDelay'],
-            "revisedGBBetDelayUpdatedDate":row['revisedGBBetDelayUpdatedDate']
+            "Bdelay_updatedAt": row['updatedAt']
         }
-    #print('===memBetDelay_before_hit_dict:===>', memBetDelay_before_hit_dict)
-    logger.info(f"===memBetDelay_before_hit_dict:===> {memBetDelay_before_hit_dict}")
+    print('===memBetDelay_before_hit_dict:===>', memBetDelay_before_hit_dict)
 
     # 4 >>>>>   TRIGGER ACTION VIA MOCK SIMULATOR  <<<<<
     # [b4 processing action logic,GB will call SF to get latest member setting 1st. i guess SF takes long to return and might cause GB to start processing late,like > 60sec0
     if to_triggerActionFlag == True:
         ahlp.trigger_module(api_session, hitObject, csv_filter)
-        #print(f'===triggered done for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()}')
-        logger.info(f'===triggered done for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()}')
+        print(f'===triggered done for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()}')
         if csv_filter['toActionFlag'].lower() == 'no':
-            time.sleep(60)  #
+            time.sleep(45)  #
         else:
-            time.sleep(60)  # to allow time for SF to send in and update to be reflected in GB db
-        #print(f'===start verifying for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()} (this time mz be after bq GBCreatedDT to work properly')
-        logger.info(f'===start verifying for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()} (this time mz be after bq GBCreatedDT to work properly')
+            time.sleep(45)  # to allow time for SF to send in and update to be reflected in GB db
+        print(
+            f'===start verifying for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()} (this time mz be after bq GBCreatedDT to work properly')
 
     # tear down
     if to_triggerActionFlag == True:
@@ -321,12 +293,10 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
 
     # 6  >>>>>  GET MEMBER'S SETTING (BL,SG,MemCat,isAdv,BetDelay) AFTER HIT  <<<<<
     memSetting_after_hit = qhlp.call_mySQL_query(mysql_connection, csv_filter, "getMemDetails_Mysql.sql", None)
-    #print('===memSetting_after_hit:===>', memSetting_after_hit)
-    logger.info(f"===memSetting_after_hit:===> {memSetting_after_hit}")
+    print('===memSetting_after_hit:===>', memSetting_after_hit)
     memBetDelay_after_hit = qhlp.call_mySQL_query(mysql_connection, csv_filter, 'getMemBetDelay_Mysql.sql', None)  # 1 dict
     memBetDelay_after_hit_dict = {item['sportid']: item['gbMemberBetDelay'] for item in memBetDelay_after_hit}
-    #print('===memBetDelay_after_hit_dict:===>', memBetDelay_after_hit_dict)
-    logger.info("===memBetDelay_after_hit_dict:===> {memBetDelay_after_hit_dict}")
+    print('===memBetDelay_after_hit_dict:===>', memBetDelay_after_hit_dict)
 
     companyName = companies_list.get(csv_filter['companyID'])
     assert companyName is not None, f'not able to proceed as there is not matching companyID for companyName from csv_row'
@@ -372,8 +342,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         # 5)assertion:: with Action -> make sure not over threshold. without Action -> make sure no update
         # --------------------------------------------------------------------------------
         if hitObject.crossModule:
-            #print('===mem_moduleHistory_after_hit:===>', moduleHistory_after_hit)
-            logger.info(f"===mem_moduleHistory_after_hit:===> {moduleHistory_after_hit}")
+            print('===mem_moduleHistory_after_hit:===>', moduleHistory_after_hit)
             # get most severe value of BL,SG & BD
             msp_smallest_rankNum, spread_smallest_rankNum, betDelay_Severest_dict, memCategory_of_directEGON, isAdvised_of_directEGON, BetDelay_of_directEGON = \
                 hlp.get_most_severe_value_from_all_moduleHits(hitObject, moduleHistory_after_hit, msp_smallest_rankNum,
@@ -447,20 +416,21 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         # When new hit triggered, each sports' BD from new ModuleHit that is allowed to take action will direct add in(if not yet exist)/replace(if already exist) the original one in expected_betDelay_dict
         # the rest of the sports(not in newHit) should remain in expected_betDelay_dict(original form)
         if hitObject.crossModule:
-            # Process each sportType of NewHit
-            for sportid in BDsportIDs:
+            # add in/replace betDelay from new Hit into the most-severe list
+            for sportid in BDsportIDs:  # for each NewHit sporttype,directly replace/add with most severe one
                 # each newHit sportType is expectd to be found in betDelay_Severest_dict,as it has collected all most severe sportType from all hit including the new hit.
-                #@@change559(done for cross)
-                expected_betDelay_dict[sportid] = betDelay_Severest_dict[sportid]
-                BDerrMsg = f'sport: {sportid}. BD did not use most severe; behaviour: {hitObject.cross_type}'
-                # make sure most severe of crossModule is cap at threshold
-                sportid_BetDelay_threshold = hlp.get_threshold_bd(hitObject,memSetting_before_hit, memBetDelay_before_hit_fmt, sportid)
-                if is_LT(betDelay_Severest_dict[sportid],sportid_BetDelay_threshold):  # use Threshold as Action if threshold is more severe(bigger value), else use Action
-                    expected_betDelay_dict[sportid] = sportid_BetDelay_threshold
-                    BDerrMsg = f'sport: {sportid}. BD has exceeded user/prioritise value: {hitObject.cross_type}'
-
-
-
+                if sportid in betDelay_Severest_dict:
+                    #bd_lastUpdBy = memBetDelay_before_hit_fmt.get(sportid, {}).get('updatedBy')
+                    #bd_existingValue = memBetDelay_before_hit_fmt.get(sportid, {}).get('gbMemberBetDelay')
+                    # # remove by CRQ-531: special handling for cross_GB_Bad_EGONgood, when upgrading, bd_lastupd mz be EGON
+                    # if ((hitObject.cross_GBBad_EGONGood)
+                    #         and is_LT(betDelay_Severest_dict[sportid], bd_existingValue) and bd_lastUpdBy != 'GB_EGON'):
+                    #     BDerrMsg = f'sport: {sportid}.BD only allowed to be upgraded if lastUpdby=EGON; behaviour: {hitObject.cross_type}'
+                    # else:
+                    expected_betDelay_dict[sportid] = betDelay_Severest_dict[sportid]
+                    BDerrMsg = f'sport: {sportid}. BD did not use most severe; behaviour: {hitObject.cross_type}'
+                else:
+                    BDerrMsg = f'sport: {sportid} is not found in betDelaySeverest_dict.why?. behaviour: {hitObject.cross_type}'
 
         # for Single
         if hitObject.singleModule and NewHit_BetDelay is not None: #NewHit_BetDelay can be 0 too
@@ -474,32 +444,23 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                 if LastUpdatedby_system_BD:
                     module_validFrom_utc = hlp.get_module_validFromDate_utc(bd_lastUpdBy,'updatedby_module')
                     bd_withinValidityPeriod = hlp.check_if_within_validity_period(module_validFrom_utc,memBetDelay_before_hit_fmt.get(sportid, {}).get('Bdelay_updatedAt'))
-                # @@change559(done for single)
-                # get threshold of BetDelay of sport
-                sportid_BetDelay_threshold = hlp.get_threshold_bd(hitObject, memSetting_before_hit, memBetDelay_before_hit_fmt, sportid)
+
+
 
                 # process single EGON
                 if hitObject.single_EGON:
                     # if lastUpdby=DiffModule & withinValidityPeriod & prevScoreType is not Good, use severity btw existing & new hit value.
                     # else direct update
-                    if LastUpdatedby_system_BD and not is_match(bd_lastUpdBy,hitObject.UpdBy_Module) and bd_withinValidityPeriod == True and bd_prevScoreType != 'Good':
+                    if LastUpdatedby_system_BD and not is_match(bd_lastUpdBy,
+                                                                hitObject.UpdBy_Module) and bd_withinValidityPeriod == True and bd_prevScoreType != 'Good':
                         if NewHit_BetDelay > bd_existingValue:
                             expected_betDelay_dict[sportid] = NewHit_BetDelay
                             BDerrMsg = f'bet delay failed to use most severe value btw new & existing value. behaviour Hit: singleEGON & LastUpdby=diffModule & withinValidity & LastScoreType !=good'
-                            # but cannot exceed threshold. if threshold more severe(bigger value),use threshold value
-                            # must use is_LT to handle in case sportid_BetDelay_threshold is none/null
-                            if is_LT(NewHit_BetDelay,sportid_BetDelay_threshold):
-                                expected_betDelay_dict[sportid] = sportid_BetDelay_threshold
-                                BDerrMsg = f'BetDelay of one or more sport has exceeded threshold.Behaviour: Single EGON -1'
                         else:
                             BDerrMsg = f'BetDelay of one or more sport has been updated with newValue. Behaviour: Single EGON'
                     else:
                         BDerrMsg = f'BetDelay of one or more sport did not get updated with newValue.Behaviour: Single EGON'
                         expected_betDelay_dict[sportid] = NewHit_BetDelay
-                        # but cannot exceed threshold. if threshold more severe(bigger value),use threshold value
-                        if is_LT(NewHit_BetDelay, sportid_BetDelay_threshold):
-                            expected_betDelay_dict[sportid] = sportid_BetDelay_threshold
-                            BDerrMsg = f'BetDelay of one or more sport has exceeded threshold.Behaviour: Single EGON -2'
 
                 # process single GBrule/GBfeature
                 else:
@@ -511,23 +472,17 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                     # lastupdated by user,get most severe BD btwn existing and NewHit
                     # this elif logic will never catch lastupdated=null, since only sportid with value will exist in sportmembersetting mysql table
                     #                                  sportid with no BD before(aka lastupdated=null), will go else logic to direct update
-                    elif (LastUpdatedby_system_BD and not is_match(bd_lastUpdBy,hitObject.UpdBy_Module) and bd_withinValidityPeriod == True) or not LastUpdatedby_system_BD:
+                    #elif LastUpdatedby_system_BD and not is_match(bd_lastUpdBy,hitObject.UpdBy_Module) and bd_withinValidityPeriod == True:
+                    elif (LastUpdatedby_system_BD and not is_match(bd_lastUpdBy,
+                                                                       hitObject.UpdBy_Module) and bd_withinValidityPeriod == True) or not LastUpdatedby_system_BD:
                         if NewHit_BetDelay > bd_existingValue:
                             expected_betDelay_dict[sportid] = NewHit_BetDelay
                             BDerrMsg = f'BetDelay of one or more sport failed to use most severe value btw new & existing value. behaviour Hit: SingleModuleHit,LstUpdBy=DiffModule,withinvalidityPeriod'
-                            # but cannot exceed threshold. if threshold more severe(bigger value),use threshold value
-                            if is_LT(NewHit_BetDelay,sportid_BetDelay_threshold):
-                                expected_betDelay_dict[sportid] = sportid_BetDelay_threshold
-                                BDerrMsg = f'BetDelay of one or more sport has exceeded threshold.Behaviour: Single EGON -1'
                         else:
                             BDerrMsg = f'BetDelay of one or more sport has been updated with newValue with lower severity. behaviour Hit: SingleModuleHit,LstUpdBy=DiffModule,withinvalidityPeriod'
                     else:
                         expected_betDelay_dict[sportid] = NewHit_BetDelay
                         BDerrMsg = f'BetDelay of one or more sport did not get updated with newValue'
-                        # but cannot exceed threshold. if threshold more severe(bigger value),use threshold value
-                        if is_LT(NewHit_BetDelay, sportid_BetDelay_threshold):
-                            expected_betDelay_dict[sportid] = sportid_BetDelay_threshold
-                            BDerrMsg = f'BetDelay of one or more sport has exceeded threshold.Behaviour: Single EGON -2'
 
         # --------------------------------------------------------------------------------------
         # >> validation on member Category
@@ -600,8 +555,8 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
             MemCat_errMsg = f"memCat Action is null, but there is update on memCategory.behaviour:{hitObject.HitSingleOrCross} ,crossType={hitObject.cross_type}"
             isAdv_errMsg = f"isAdv Action is null, but there is update on isAdv.behaviour:{hitObject.HitSingleOrCross} ,crossType={hitObject.cross_type}"
 
-    #print('===expected_betDelay_dict:===>', expected_betDelay_dict)
-    logger.info(f"===expected_betDelay_dict:===>' {expected_betDelay_dict}")
+    print('===expected_betDelay_dict:===>', expected_betDelay_dict)
+
     # assertion must do last , to include checking that has no action(eg.feature off,whitelist,etc..)
     assert_ActionUpdate(hitObject, msp_smallest_rankNum, msp_threshold_rankNum, memSetting_before_hit,
                         memSetting_after_hit, 'msp', api_CalcBL_CSfinalBL_mapping, MerrMsg)
@@ -691,7 +646,49 @@ moduletocall=====,{2: [(2, 1)], 1: [(1, 1)], 4: [(1, 1), (1, 2), (2, 1), (2, 2),
 , (26, 2), (27, 1), (27, 2), (28, 1), (28, 2), (29, 1), (29, 2), (30, 1), (30, 2), (31, 1), (31, 2), (32, 1), (32, 2), (33, 1), (33, 2), (34, 1), (34, 2), (35, 1), (35, 2), (36, 1), (36, 2), (37, 1), (37, 2), (38, 1), (38, 2), (
 39, 1), (39, 2), (40, 1), (40, 2), (41, 1), (41, 2), (42, 1), (42, 2), (43, 1), (43, 2), (44, 1), (44, 2), (45, 1), (45, 2), (46, 1), (46, 2), (47, 1), (47, 2), (48, 1), (48, 2), (49, 1), (49, 2), (50, 1), (50, 2), (51, 1), (51,
  2), (52, 1), (52, 2), (53, 1), (53, 2), (54, 1), (54, 2), (55, 1), (55, 2), (56, 1), (56, 2), (57, 1), (57, 2), (58, 1), (58, 2), (59, 1), (59, 2), (60, 1), (60, 2), (61, 1), (61, 2), (62, 1), (62, 2), (63, 1), (63, 2), (64, 1), (64, 2), (65, 1), (65, 2), (66, 1), (66, 2), (67, 1), (67, 2)], 16: [(1, 1)], 17: [(1, 1)]}
+==memBetDelay_before_hit_fmt====. {1: {'gbMemberBetDelay': None, 'updatedBy': 'GB_FAMemFeatures_InvKey', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 2: {'gbMemberBetDelay': None, 'updatedBy
+': 'GB_FAMemFeatures_InvKey', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 3: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetim
+e(2025, 2, 2, 4, 0)}, 4: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 5: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType
+': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 6: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 7: {'gbMemberBetDelay':
+ None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 8: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.dateti
+me(2025, 2, 2, 4, 0)}, 9: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 10: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreTy
+pe': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 11: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 12: {'gbMemberBetDel
+ay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 13: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.d
+atetime(2025, 2, 2, 4, 0)}, 14: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 15: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_s
+coreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 16: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 17: {'gbMember
+BetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 18: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': date
+time.datetime(2025, 2, 2, 4, 0)}, 19: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 20: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', '
+prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 21: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 22: {'gb
+MemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 23: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt'
+: datetime.datetime(2025, 2, 2, 4, 0)}, 24: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 25: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EG
+ON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 26: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 27
+: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 28: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_upda
+tedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 29: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 30: {'gbMemberBetDelay': None, 'updatedBy': 
+'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 31: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0
+)}, 32: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 33: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdela
+y_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 34: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 35: {'gbMemberBetDelay': None, 'update
+dBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 36: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2
+, 4, 0)}, 37: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 38: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 
+'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 39: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 40: {'gbMemberBetDelay': None, '
+updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 41: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025
+, 2, 2, 4, 0)}, 42: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 43: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': '
+Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 44: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 45: {'gbMemberBetDelay': N
+one, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 46: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetim
+e(2025, 2, 2, 4, 0)}, 47: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 48: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreTy
+pe': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 49: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 50: {'gbMemberBetDel
+ay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 51: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.d
+atetime(2025, 2, 2, 4, 0)}, 52: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 53: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_s
+coreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 54: {'gbMemberBetDelay': None, 'updatedBy': 'GB_FAMemFeatures_InvKey', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}
+, 55: {'gbMemberBetDelay': None, 'updatedBy': 'GB_FAMemFeatures_InvKey', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 56: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType':
+ 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 57: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 58: {'gbMemberBetDelay':
+ None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 59: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datet
+ime(2025, 2, 2, 4, 0)}, 60: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 61: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_score
+Type': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 62: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 63: {'gbMemberBetD
+elay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 64: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime
+.datetime(2025, 2, 2, 4, 0)}, 65: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 66: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}, 67: {'gbMemberBetDelay': None, 'updatedBy': 'GB_EGON', 'prev_scoreType': 'Bad', 'Bdelay_updatedAt': datetime.datetime(2025, 2, 2, 4, 0)}}
+
 ---------------------------------------------------------------------------------------------------- Captured stdout teardown -
+
 '''
 
 
