@@ -218,7 +218,7 @@ def get_threshold_bd(hitObject,memSetting_before_hit,memBetDelay_before_hit_fmt,
     BD_UserValue = memBetDelay_before_hit_fmt.get(sportid, {}).get('GBBetDelayByUser') if BD_UserValue_UpdDate else None
     BD_PriorValue = memBetDelay_before_hit_fmt.get(sportid, {}).get('revisedGBBetDelay')  if BD_priorValue_UpdDate else None
 
-    #=== get threshold of BD==
+    #=== get threshold of BD (BD has no merchant,ignore merchant)==
     # for  (1)singleEGON or (2)GBgood_hasEGON or  or (3)GBbad_EGONbad,
     #      use priorFlag or merchantValue(whichever latest) as cap
     if (hitObject.single_EGON or hitObject.cross_GBGood_hasEGON or hitObject.cross_GBBad_EGONBad):
