@@ -6,3 +6,16 @@ in powershell, go to 'C:\Users\lim.miin\PycharmProjects\MyPythonTest2'
    git commit -m 'blah2'
 3)push to github to sync the changes (after this step only it will reflect in github a..)
    git push origin master
+
+
+in another pc:
+1)download git
+2)create a folder anywhere
+3)open up powershell and go to that folder
+4)then put in command
+	git clone <git repo url><foldername eg. MyPythonTest2>
+5)done. U can use pycharm to open up new project name MyPythonTest2
+6)since u clone from remote repo, ur current project in pycharm might not have venv . Use command below to create one & activate it & install the packages into venv
+	python -m venv .venv
+	.\.venv\Scripts\Activate.ps1
+	pip install -r requirements.txt

@@ -1,5 +1,5 @@
 notes(not used),traceability,testcase,memberCode,companyID,hitType,gbRuleScore,toActionFlag,prerequisite1,prerequisite2,prerequisite3,EditUpdatedDate,pre_actionOnOffFlag,post_actionOnOffFlag
-,,1,gbmock_t3449n040,3449,MBR - Real Basketball,40,no,"byUser:yes
+,,1,gbmock_test001,3450,MBR - Real Basketball,40,no,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 RealSocBD:2
@@ -1246,7 +1246,7 @@ module_to_Upd:FAMember - Invalid Key
 upd_module_DT:yes
 upd_memsetting_DT:yes",,
 ,,,,,,,,,,,,,
-,noActCondMet#1,1,gbmock_t3449n026,3449,MBR - Real Basketball,60,yes,"byUser:yes
+1,noActCondMet#1,,gbmock_t3449n026,3449,MBR - Real Basketball,60,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 RealSocBD:0
@@ -1257,15 +1257,15 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,
-,*got 1 step whitelist has to trigger manually,2,gbmock_t3449n026,3449,MBR - Real Basketball,50,yes,,,,,,
-,,3,gbmock_t3449n026,3449,MBR - Real Basketball,50,no,,,,,,
-,,4,gbmock_t3449n026,3449,MBR - Real Basketball,40,no,,,,,,
-,,5,gbmock_t3449n026,3449,MBR - Real Basketball,60,no,,,,,,
-,,6,gbmock_t3449n026,3449,MBR - Real Basketball,60,yes,,,,,,
-,,7,gbmock_t3449n026,3449,MBR - Real Basketball,50,yes,,,,,"flag:off
+2,*got 1 step whitelist has to trigger manually,,gbmock_t3449n026,3449,MBR - Real Basketball,50,yes,,,,,,
+3,,,gbmock_t3449n026,3449,MBR - Real Basketball,50,no,,,,,,
+4,,,gbmock_t3449n026,3449,MBR - Real Basketball,40,no,,,,,,
+5,,,gbmock_t3449n026,3449,MBR - Real Basketball,60,no,,,,,,
+6,,,gbmock_t3449n026,3449,MBR - Real Basketball,60,yes,,,,,,
+7,,,gbmock_t3449n026,3449,MBR - Real Basketball,50,yes,,,,,"flag:off
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball"
-,,8,gbmock_t3449n026,3449,MBR - Real Basketball,70,no,,,,,,
+8,,,gbmock_t3449n026,3449,MBR - Real Basketball,70,no,,,,,,
 ,noActCondMet#4,,gbmock_t3449n025,3449,MBR - Real Basketball,50,no,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
