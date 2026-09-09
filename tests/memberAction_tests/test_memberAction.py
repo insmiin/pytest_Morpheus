@@ -115,7 +115,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                    api_CalcBL_CSfinalBL_mapping,
                    sportGroup_sportIDs_UImap_dict, prev_memberCode, prev_memberCode2,csv_filter):
     logger.info(f"=========================================================================================================")
-    logger.info(f"==========================================testcase_{csv_filter['testcase']}===========================================")
+    logger.info(f"==========================================testcase_{csv_filter['testcase']}=====================================================")
     logger.info(f"=========================================================================================================")
     # flag to manually control certain processing
     to_setupmem_b4_triggerActionFlag = True #flag for me to control (auto reset  & all csv columns from prerequisites)
@@ -379,7 +379,8 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                 hlp.get_most_severe_value_from_all_moduleHits(hitObject, moduleHistory_after_hit, msp_smallest_rankNum,
                                                           spread_smallest_rankNum, sportGroup_sportIDs_UImap_dict,
                                                           betDelay_Severest_dict)
-
+            logger.info(f"==betDelay_Severest_dict:====> {betDelay_Severest_dict}")
+            logger.info(f"==msp_smallest_rankNum:=====> {msp_smallest_rankNum}")
         # if single Modules and currentHit(MSP) has value, directly assing current Hit value
         if hitObject.singleModule and new_Hit_Action['UpdateMemberProfile']:
             msp_smallest_rankNum = hlp.get_ranking_byID(new_Hit_Action['UpdateMemberProfile'], 'msp')
@@ -430,15 +431,21 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         NewHit_BetDelay = int(new_Hit_Action['UpdateMemberBetDelay'])
         BDsportIDs = []  # to store sportid of new Hit
         newHit_sportGroup_list = ast.literal_eval(new_Hit_Action['UpdateBDSportGroups'])
-        if hitObject.cross_GBGood_hasEGON:
-            newHit_sportGroup_list = BetDelay_of_directEGON
-            BDerrMsg = f'system did not use all BD is from EGON, should direct egon for this crossModule type. Behaviour Hit: {hitObject.cross_type}'
-        if newHit_sportGroup_list == [-1]:
-            for sportGroup in sportGroup_sportIDs_UImap_dict:  # get all from {1001: [1], 1002: [2], 1003: [54, 55], 1000: [3, 4, 5, 6, 7, 8,etc..]}
-                BDsportIDs.extend(sportGroup_sportIDs_UImap_dict.get(sportGroup, []))
+
+        if hitObject.cross_GB_Bad and hitObject.cross_EGON_Good and hitObject.hitGbRule and hitObject.HitID == 11:
+            BDerrMsg = f'system is Not allowed to take action if currentHit is Egon. Behaviour Hit: {hitObject.cross_type}'
+            # betDelay_Severest_dict remains {}
         else:
-            for sportGroup in newHit_sportGroup_list:
-                BDsportIDs.extend(sportGroup_sportIDs_UImap_dict.get(sportGroup, []))
+            if hitObject.cross_GBGood_hasEGON:
+                newHit_sportGroup_list = BetDelay_of_directEGON
+                BDerrMsg = f'system did not use all BD is from EGON, should direct egon for this crossModule type. Behaviour Hit: {hitObject.cross_type}'
+
+            if newHit_sportGroup_list == [-1]:
+                for sportGroup in sportGroup_sportIDs_UImap_dict:  # get all from {1001: [1], 1002: [2], 1003: [54, 55], 1000: [3, 4, 5, 6, 7, 8,etc..]}
+                    BDsportIDs.extend(sportGroup_sportIDs_UImap_dict.get(sportGroup, []))
+            else:
+                for sportGroup in newHit_sportGroup_list:
+                    BDsportIDs.extend(sportGroup_sportIDs_UImap_dict.get(sportGroup, []))
 
         # print(f"new_Hit_Action['UpdateBDSportGroups'] is ,",newHit_sportGroup_list)
         # print(f"BDsportIDs 2 isss,", BDsportIDs)
@@ -446,7 +453,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         # expected_betDelay_dict contains member's original form of BetDelay before hit.
         # When new hit triggered, each sports' BD from new ModuleHit that is allowed to take action will direct add in(if not yet exist)/replace(if already exist) the original one in expected_betDelay_dict
         # the rest of the sports(not in newHit) should remain in expected_betDelay_dict(original form)
-        if hitObject.crossModule:
+        if hitObject.crossModule and betDelay_Severest_dict: # for egonGoodGBbad,lasthit=egon, betDelay_Severest_dict is empty
             # Process each sportType of NewHit
             for sportid in BDsportIDs:
                 # each newHit sportType is expectd to be found in betDelay_Severest_dict,as it has collected all most severe sportType from all hit including the new hit.
