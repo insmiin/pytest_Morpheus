@@ -4,7 +4,7 @@ import time
 import os
 from datetime import datetime, timezone, timedelta
 import tests.myConstants as const  ##not found in sys.path, so just directly add the folder name
-from tests.memberAction_tests.helpers.myHelperFunc import call_api
+from tests.utils.api_utils import call_api
 import tests.memberAction_tests.helpers.memAction_sql_helpers as qhlp
 from tests.utils.comparison_utils import is_match, is_LT
 from tests.memberAction_tests.mappingModule import SpreadGroupMappers, MemberProfileSettingMappers, GbRuleMapper, GbFeatureMapper

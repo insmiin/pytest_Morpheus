@@ -23,17 +23,17 @@ def main():
         "SF_EventResult",
         "SF_EventResultLog",
         "SF_Event",
-        "SF_Wager",
+        #"SF_Wager",
         "SF_Member",
         "SF_OddsLog",
         "SF_ReferenceEventResult"
     ]
-    ETL_date = '20260909'
+    ETL_date = '20260925'
     n = 0
     for fn in file_list:
         input_file = f'C:/Users/lim.miin/Desktop/testing/base file ETL/{fn}_template.csv'
         #output_file = f'C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/try ELT files/20260828run(emtpy)/{fn}_{ETL_date}.csv'
-        output_file = f'D:/Miin/Ghostbuster/ELT (extract load transform)/run ELT files/20260909run(wager)/{fn}_{ETL_date}.csv'
+        output_file = f'D:/Miin/Ghostbuster/ELT (extract load transform)/run ELT files/20260925run(cookies)/{fn}_{ETL_date}.csv'
         output_mem_tag(input_file, output_file)
         n += 1
     print(f'Total of {n} files has been generated.')

@@ -1,82 +1,22 @@
-
+import sys
+import os
+# root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+# sys.path.insert(0, root_dir)
+import requests
 import pytest
 from mysql.connector import Error
 import mysql.connector
 import requests
 #import test_scenarios.myConstants as const
 import tests.myConstants as const
-import sys
-import os
-from tests.memberAction_tests.helpers.myHelperFunc import call_api
+from tests.utils.api_utils import call_api
 #from test_scenarios.myHelperFunc import call_api
 #to add root directory into the sys.path, so that the script able to import module in root directory
-root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, root_dir)
-from mappingModule import SportGroupMapper
+
+from tests.memberAction_tests.mappingModule import SportGroupMapper
 import logging
 
 logger = logging.getLogger(__name__)
-
-@pytest.fixture(scope="session")
-def mysql_connection():
-    print('mysql_connection fixtureee')
-    conn = None
-    try:
-        conn = mysql.connector.connect(
-            host='35.229.171.142',
-            user='sfqat_superadmin_qa',  #'qat_readonly',
-            password='dL72QF1Ia4',   #'NTZ6Wt3tzqCp4k7v',
-            port=3306,
-            database='GB_Qat'  # !!this is DATABASEname(GB_Qat) in mysql , not the connectionName on mysql workbench....
-        )
-        yield conn
-    except Error as err:
-        pytest.fail(f"MySQL connection error: {err}")
-    finally:
-        print('mysql at finally')
-        if conn and conn.is_connected():
-            print('going to close the mysql connection')
-            conn.close()
-
-
-@pytest.fixture(scope="function")
-def mysql_connection2():
-    print('mysql_connection2222 fixtureee')
-    conn = None
-    try:
-        conn = mysql.connector.connect(
-            host='35.229.171.142',
-            user='sfqat_superadmin_qa',  #'qat_readonly',
-            password='dL72QF1Ia4',   #'NTZ6Wt3tzqCp4k7v',
-            port=3306,
-            database='GB_Qat'  # !!this is DATABASEname(GB_Qat) in mysql , not the connectionName on mysql workbench....
-        )
-        yield conn
-    except Error as err:
-        pytest.fail(f"MySQL connection22 error: {err}")
-    finally:
-        print('mysql2 at finally')
-        if conn and conn.is_connected():
-            print('going to close the mysql2 connection')
-            conn.close()
-
-@pytest.fixture(scope="session")
-def api_session():
-    print('api_session GB fixtureeeeee')
-    session = requests.Session()
-    session.headers.update(
-        {"Authorization": const.AUTH_TOKEN, "Content-Type": "application/json", "Connection": "keep-alive"})
-    yield session
-    session.close()
-
-@pytest.fixture(scope="session")
-def api_session_SF():
-    print('api_session SF fixtureeeeee')
-    session = requests.Session()
-    session.headers.update(
-        {"Authorization": const.AUTH_TOKEN, "Content-Type": "application/json", "Connection": "keep-alive"})
-    yield session
-    session.close()
 
 # Fixture to fetch companies once per session
 @pytest.fixture(scope="session")
