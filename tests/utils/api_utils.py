@@ -1,7 +1,7 @@
 from typing import List, Dict, Any, Optional
 import requests
 
-def call_api(api_session, who: str,method: str, url: str, json_data: Optional[Dict] = None) -> requests.Response:
+def call_api(api_session, who: str,method: str, url: str, json_data: Optional[Any] = None) -> requests.Response:
     """Make an API request."""
     response = api_session.request(
             method=method,

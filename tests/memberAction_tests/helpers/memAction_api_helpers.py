@@ -149,12 +149,14 @@ def turn_OnOff_action_featureflag(api_session, csv_featureOnOff_actionFlag):
     assert response.status_code == 200, f"calling to FeatureOnOff_action flag update returns {response.status_code} "
 
 
-def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,prev_memberCode2):
+def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,prev_memberCode2,p_appliedCS_value):
     for i in range(1, 4):
         prerequisite = f"prerequisite{i}"
         if not csv_filter[prerequisite]:
             # return early if the rest of the pre-req is empty
             return
+
+
 
         # CONVERT CSV PREREQUISITE INTO JSON FORMAT
         pairs = {}
@@ -262,14 +264,15 @@ def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,
             # !!memberProfileGroupUpdatedAt i default d value to d one belong to PG 'Reset_Initialise A' as it is more commonly used.(to review)
             # !!if wanna use other PG, pls update accordingly. the system will check
             url_upd = f"{const.API_BASE_URL}/MemberSetting/UpdateMemberByID"
-            #@@change559 see where to add in BD for all sport and also updatedAt for BD(to do)
+            const_applied_CS = p_appliedCS_value if i == 1 else None
             data = {"memberID": memList_memberid, "memberStatusID": 999, "isHousePlayer": 999,
                     "memberSettingProfileID": pairs['memberSettingProfileID'],
                     "spreadGroupID": pairs['spreadGroupID'], "memberCategoryID": pairs['memberCategoryID'],
                     "isAdvised": pairs['isAdvised'], "isNotifyMerchant": 0,
                     "memberProfileGroupID": pairs['memberProfileGroupID'], "isNotOverrideBySystem": 999,
                     "updatedBy": "admin.qa2", "memberProfileGroupUpdatedAt": "2024-12-30T01:32:45",
-                    "isManualRevised": pairs['isManualRevised'], "updatedAt": memsetting_details['updatedAt'],"appliedCreditScore":None,
+                    "isManualRevised": pairs['isManualRevised'], "updatedAt": memsetting_details['updatedAt'],
+                    "appliedCreditScore":const_applied_CS,
                     "isCreditScoreManualRevised":0,
                     "betDelaySportGroupList":betDelaySportGroupList
                     }
@@ -281,7 +284,7 @@ def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,
             response = call_api(api_session, 'call_to_update_memberListing', 'post', url_upd, data)
             assert response.status_code == 200, f"calling to memberListing update returns {response.status_code} "
             assert response.json()['result'] == True, f'error: {response.json()['message']}'
-            time.sleep(60)
+            time.sleep(50)
 
         # PROCESS UPDATE by MERCHANT, 2 methods to do it:
         # (1) as merchant, trigger from SFBO (by triggering SF_API) [byuser=no] OR
@@ -325,7 +328,7 @@ def initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,
             errormsg = response.json()['Result'][0]['ApiResponse']['Message']
             assert response.json()[
                        'Code'] == 100 and errorcode == 100, f" SFAPI_to_upd_members has errormsg:{errormsg}. please check"
-            time.sleep(60)
+            time.sleep(50)
 
             # after updateing necessary field using compliance, we run query to fabricate data in mysql to make it look like it is by merchant
             if pairs['byUser'].lower() == 'no_sqledit':

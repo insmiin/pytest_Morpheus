@@ -19,3 +19,9 @@ in another pc:
 	python -m venv .venv
 	.\.venv\Scripts\Activate.ps1
 	pip install -r requirements.txt
+
+
+===others===
+~i made some folder into package, if folder contains modules that will be used by other modules
+~helpers for specific function in individual tests , utils like call_api for generic functions across all tests
+~constant for indiviual tests put under respective tests folders, constants acorss all test put under '/tests' folder

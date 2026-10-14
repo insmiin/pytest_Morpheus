@@ -10,6 +10,7 @@
 #                                           (in case tc failed, pytst will auto print all available captured log either from CLI or file, and display under 'Captured log call' )
 #                                                     in this case, only INFO is captured in both CLI & files, so only INFO will be printed in 'captured log call'
 # DEBUG > INFO > WARNING > ERROR > CRITICAL
+#pytest tests\memberAction_tests\test_memberAction.py -v --tb=short --log-file=memberAction_test.log --log-file-level=INFO --html=report.html
 import sys
 import pytest
 from mysql.connector import Error
@@ -87,12 +88,10 @@ def assert_ActionUpdate(hitObject, smallest_rankNum, threshold_rankNum, memSetti
         value_before_hit = memSetting_before_hit['sfSpreadGroupID']
         value_after_hit = memSetting_after_hit['sfSpreadGroupID']
         rankingTo_valueId_method = SpreadGroupMappers.get_ID_by_ranking
-
     if smallest_rankNum:  # if there is Action
         if is_LT(threshold_rankNum,
                  smallest_rankNum):  # use Threshold as Action if threshold is more severe, else use Action
             smallest_rankNum = threshold_rankNum
-
         expected_valueID = rankingTo_valueId_method(smallest_rankNum)
         assert is_match(value_after_hit,
                         expected_valueID), f"{assert_type} expected Action is incorrect,behaviour:{hitObject.HitSingleOrCross} ,crossType={hitObject.cross_type}"
@@ -112,17 +111,28 @@ def assert_ActionUpdate(hitObject, smallest_rankNum, threshold_rankNum, memSetti
                          )
 # companies_list,api_session,mysql_connection only need to call 1 time per run
 def test_memAction(mysql_connection, companies_list, api_session, api_session_SF, api_MemHierarchyGroupList, \
-                   api_CalcBL_CSfinalBL_mapping,
+                   api_CalcBL_CSfinalBL_mapping,api_assignedCS_delaymodifier_mapping,
                    sportGroup_sportIDs_UImap_dict, prev_memberCode, prev_memberCode2,csv_filter):
-    logger.info(f"=========================================================================================================")
-    logger.info(f"==========================================testcase_{csv_filter['testcase']}=====================================================")
-    logger.info(f"=========================================================================================================")
-    # flag to manually control certain processing
-    to_setupmem_b4_triggerActionFlag = True #flag for me to control (auto reset  & all csv columns from prerequisites)
-    to_reset_member = True  # flag to control auto reset only.(i.e sometime if wan to continue subsequent action of SAME member, set this to false)
-    to_triggerActionFlag = True  # flag for me to control action triggering
-    apply_creditScore_FLAG = True  # this must be tally with GeneralSetting flag. all 4 flag must be on. any flag is off means False
+    logger.info("=" * 105)
+    logger.info("=" * 42 + f"testcase_{csv_filter['testcase']}" + "=" * 53)
+    logger.info("=" * 105)
 
+    ##### Use this CONTROL  flag to determine whether certain processing logic should run ####
+    # flag to remove all member's ActionHits history and to perform all pre-memberaction update, in csv starting from prerequisites)
+    # eg. want to remain all existing hit, set this to false
+    m_setupmember = True
+    # flag to remove all member's ActionHits history(dependancy of m_setupmember flag)
+    # (i.e if wan to test the individual action 1 by 1 within SAME member, set this to false)
+    m_setupmember_resetHit_portion = True
+    # flag for trigger memberAction via simulator
+    to_triggerActionFlag = True
+    # this must be tally with GeneralSetting flag. all 4 flag must be on. any flag is off means False
+    apply_creditScore_FLAG_BL = True
+    apply_creditScore_FLAG_BD = True
+    # set this depending on what appliedCS value you wan to test
+    # must be 2 decimal places(eg. 2.00.0.50)
+    p_appliedCS_value = 0.50 #to use 2.00, please set p_CS_GT1_fullfill_otherConditions to True
+    p_CS_GT1_fullfill_otherConditions = False #this program dont have logic check for CS>1, it is control by u whether to apply CS or not
 
     # create a class to store all the necessary information related to NewHit
     class NewHit:
@@ -236,12 +246,12 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
 
 
     # 2  >>>>> SETUP MEMBER/ DATA PREPARATION,BASED ON CSV INPUT, BEFORE ACTION TRIGGERING STARTS   <<<<<
-    if to_setupmem_b4_triggerActionFlag == True:
+    if m_setupmember == True:
         # (Automatically not via CSV), for each member,
         # For this member, reset updDate(score,mainAction,childAction of all the hits(by setting them outside validity,so that i can reuse existing testing members & not creating new one each time)
         # reset all member's existing BD to 0 & date to outside validity(to confirm if updatedBy need to be reset too..)
         # i dint reset BL/SG/memCat yet,as initial cross/single module checking wont involved this attribute(to add if needed)
-        if to_reset_member == True:
+        if m_setupmember_resetHit_portion == True:
             if csv_filter['memberCode'] != prev_memberCode["value"]:
                 qhlp.reset_member_hits(mysql_connection, csv_filter)
                 prev_memberCode["value"] = csv_filter['memberCode']
@@ -249,7 +259,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         # (initiated by csv)Before any system hit, initialise member setting by doing manual update. (both userValue & merchant update)
         # The ManualUpdate approach performs direct updates.
         if csv_filter['prerequisite1']:
-            ahlp.initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,prev_memberCode2)
+            ahlp.initialise_member(api_session, api_session_SF, mysql_connection, csv_filter,prev_memberCode2,p_appliedCS_value)
 
         # for outside validity period testing:
         # to fabricate updatedDate of modulehit(mainActionTable,childActionTable) and/or updatedDate of membersetting(i.e BL/SG/BD/MemCat)
@@ -265,7 +275,6 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
     # 3 >>>>>  SAVE MEMBER'S SETTING (BL,SG,MemCat,isAdv,BetDelay) BEFORE HIT  <<<<<
     memSetting_before_hit = qhlp.call_mySQL_query(mysql_connection, csv_filter, "getMemDetails_Mysql.sql", None)  # 1 dict
     logger.info(f"===memSetting_before_hit:===>   {memSetting_before_hit}")
-    logger.debug('hahahahhahahaha')
     #print('===memSetting_before_hit:===>', memSetting_before_hit)
     memBetDelay_before_hit = qhlp.call_mySQL_query(mysql_connection, csv_filter, 'getMemBetDelay_Mysql.sql', None)  # 1 dict
     memBetDelay_before_hit_dict = {item['sportid']: item['gbMemberBetDelay'] for item in
@@ -298,9 +307,9 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         #print(f'===triggered done for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()}')
         logger.info(f'===triggered done for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()}')
         if csv_filter['toActionFlag'].lower() == 'no':
-            time.sleep(60)  #
+            time.sleep(50)  #
         else:
-            time.sleep(60)  # to allow time for SF to send in and update to be reflected in GB db
+            time.sleep(50)  # to allow time for SF to send in and update to be reflected in GB db
         #print(f'===start verifying for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()} (this time mz be after bq GBCreatedDT to work properly')
         logger.info(f'===start verifying for (test case#{csv_filter['testcase']}) ===>:, {datetime.now()} (this time mz be after bq GBCreatedDT to work properly')
 
@@ -340,7 +349,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
     spread_smallest_rankNum = None
     msp_threshold_rankNum = None
     spread_threshold_rankNum = None
-    to_apply_creditScore = False
+    to_apply_creditScore_BL = False
     betDelay_Severest_dict = {}
     MerrMsg = ''
     SerrMsg = ''
@@ -352,7 +361,8 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
     expected_isAdv = memSetting_before_hit['sfisAdvised']
     MemCat_errMsg = 'noAction not allowed for this hit, but there is update on MemCat'
     isAdv_errMsg = 'noAction not allowed for this hit, but there is update on isAdv'
-
+    beforeHit_appliedCS = memSetting_before_hit['appliedCreditScore']
+    beforeHit_msp = memSetting_before_hit['sfMemberSettingProfileID']
     # 9 >>>>> PERFORM ACTION LOGIC HERE (SINGLE/CROSS LOGIC)    <<<<<
     # perform verification only if CurrentHit is expected to have Action(eg.succ,etc..), else before and After memberSetting should remain the same
     if new_Hit_Action['has_action_to_verify'] == 'true':
@@ -379,32 +389,28 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                 hlp.get_most_severe_value_from_all_moduleHits(hitObject, moduleHistory_after_hit, msp_smallest_rankNum,
                                                           spread_smallest_rankNum, sportGroup_sportIDs_UImap_dict,
                                                           betDelay_Severest_dict)
-            logger.info(f"==betDelay_Severest_dict:====> {betDelay_Severest_dict}")
-            logger.info(f"==msp_smallest_rankNum:=====> {msp_smallest_rankNum}")
+
         # if single Modules and currentHit(MSP) has value, directly assing current Hit value
         if hitObject.singleModule and new_Hit_Action['UpdateMemberProfile']:
             msp_smallest_rankNum = hlp.get_ranking_byID(new_Hit_Action['UpdateMemberProfile'], 'msp')
         # if there is msp Action(either from Cross or Single Module)
         if msp_smallest_rankNum is not None:
-            # @@changeCS:option 2 (i.e apply CS to new value first then only comparing with existing value)(for single/cross that need comopare with existing value ones)
-            if apply_creditScore_FLAG == True:
-                msp_smallest_rankNum,to_apply_creditScore = hlp.creditScore_application(msp_smallest_rankNum, api_CalcBL_CSfinalBL_mapping,memSetting_before_hit['appliedCreditScore'])
-
-            msp_threshold_rankNum = hlp.get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore,'msp')
+            if apply_creditScore_FLAG_BL == True:
+                #return finalBL_CS (if to_apply_creditScore is true), else oriBL_CS(if to_apply_creditScore is false)
+                msp_smallest_rankNum,to_apply_creditScore_BL = (
+                    hlp.creditScore_application_BL(msp_smallest_rankNum, api_CalcBL_CSfinalBL_mapping,beforeHit_appliedCS,beforeHit_msp,p_CS_GT1_fullfill_otherConditions))
+            msp_threshold_rankNum = hlp.get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore_BL,'msp')
             if hitObject.singleModule:
                 msp_smallest_rankNum, MerrMsg = hlp.BL_SG_Single_Module_check(memSetting_before_hit, hitObject,new_Hit_Action, msp_smallest_rankNum,msp_threshold_rankNum, 'msp')
             # CRQ-513(no more special handling)
             # if hitObject.crossModule:
             #     msp_smallest_rankNum, MerrMsg = BL_SG_Cross_Module_check(memSetting_before_hit, hitObject,msp_smallest_rankNum, 'msp')
-            # @@changeCS: option 1 (i.e above compare existingValud vs newValue without CS first, then here only apply CS)
-            # @@right now i use option2. if option 1 is used instead, move that line (creditScore_application) here and remove option2
-
         # if single Modules and currentHit(SPREAD) has value, directly assing current Hit value
         if hitObject.singleModule and new_Hit_Action['UpdateMemberSpreadGroup']:
             spread_smallest_rankNum = hlp.get_ranking_byID(new_Hit_Action['UpdateMemberSpreadGroup'], 'spread')
         # if there is spread Action(either from Cross or Single Module)
         if spread_smallest_rankNum is not None:
-            spread_threshold_rankNum = hlp.get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore,'spread')
+            spread_threshold_rankNum = hlp.get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore_BL,'spread')
             if hitObject.singleModule:
                 spread_smallest_rankNum, SerrMsg = hlp.BL_SG_Single_Module_check(memSetting_before_hit, hitObject,
                                                                              new_Hit_Action, spread_smallest_rankNum,
@@ -427,8 +433,13 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         # for crossModule, most severe of each sports from past HitModules are stored in betDelay_Severest_dict
         # if currentHit has action, compare d sports from currentHit wif d same sports in betDelay_Severest_dict. then replace with d most severe one, or add in if currentHit sport is not inside
         # get the original sports' BD before Hit. Replace/add the currentHit triggered sports using value from betDelay_Severest_dict
-
+        to_apply_creditScore_BD = False
         NewHit_BetDelay = int(new_Hit_Action['UpdateMemberBetDelay'])
+        if apply_creditScore_FLAG_BD == True:
+            # return CS_finalBD (if to_apply_creditScore is true), else ori_finalBD(if to_apply_creditScore is false)
+            NewHit_BetDelay, to_apply_creditScore_BD = hlp.creditScore_application_BD(NewHit_BetDelay,
+                                                                                 api_assignedCS_delaymodifier_mapping,
+                                                                                 beforeHit_appliedCS,beforeHit_msp,msp_smallest_rankNum,p_CS_GT1_fullfill_otherConditions)
         BDsportIDs = []  # to store sportid of new Hit
         newHit_sportGroup_list = ast.literal_eval(new_Hit_Action['UpdateBDSportGroups'])
 
@@ -453,16 +464,23 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
         # expected_betDelay_dict contains member's original form of BetDelay before hit.
         # When new hit triggered, each sports' BD from new ModuleHit that is allowed to take action will direct add in(if not yet exist)/replace(if already exist) the original one in expected_betDelay_dict
         # the rest of the sports(not in newHit) should remain in expected_betDelay_dict(original form)
-        if hitObject.crossModule and betDelay_Severest_dict: # for egonGoodGBbad,lasthit=egon, betDelay_Severest_dict is empty
+        if hitObject.crossModule and betDelay_Severest_dict: #  egonGoodGBbad,lasthit=egon will skip this as betDelay_Severest_dict is empty
             # Process each sportType of NewHit
             for sportid in BDsportIDs:
+                #expected_betDelay_dict[sportid] = betDelay_Severest_dict[sportid]
+                # return CS_finalBD (if to_apply_creditScore is true), else ori_finalBD(if to_apply_creditScore is false)
+                if apply_creditScore_FLAG_BD == True:
+                    betDelay_Severest_dict[sportid], to_apply_creditScore_BD = hlp.creditScore_application_BD(betDelay_Severest_dict[sportid],
+                                                                                              api_assignedCS_delaymodifier_mapping,
+                                                                                              beforeHit_appliedCS,beforeHit_msp,
+                                                                                              msp_smallest_rankNum,p_CS_GT1_fullfill_otherConditions)
                 # each newHit sportType is expectd to be found in betDelay_Severest_dict,as it has collected all most severe sportType from all hit including the new hit.
-                #@@change559(done for cross)
                 expected_betDelay_dict[sportid] = betDelay_Severest_dict[sportid]
-                BDerrMsg = f'sport: {sportid}. BD did not use most severe; behaviour: {hitObject.cross_type}'
+                BDerrMsg = f'sport: {sportid}. BD did not use most severe; behaviour: {hitObject.cross_type},CS_use: {to_apply_creditScore_BD}'
                 # make sure most severe of crossModule is cap at threshold
-                sportid_BetDelay_threshold = hlp.get_threshold_bd(hitObject,memSetting_before_hit, memBetDelay_before_hit_fmt, sportid)
-                if is_LT(betDelay_Severest_dict[sportid],sportid_BetDelay_threshold):  # use Threshold as Action if threshold is more severe(bigger value), else use Action
+                sportid_BetDelay_threshold = hlp.get_threshold_bd(hitObject,memSetting_before_hit, memBetDelay_before_hit_fmt, sportid,to_apply_creditScore_BD)
+                # use Threshold as Action if threshold is more severe(bigger value), else use Action
+                if is_LT(betDelay_Severest_dict[sportid],sportid_BetDelay_threshold):
                     expected_betDelay_dict[sportid] = sportid_BetDelay_threshold
                     BDerrMsg = f'sport: {sportid}. BD has exceeded user/prioritise value: {hitObject.cross_type}'
 
@@ -483,7 +501,7 @@ def test_memAction(mysql_connection, companies_list, api_session, api_session_SF
                     bd_withinValidityPeriod = hlp.check_if_within_validity_period(module_validFrom_utc,memBetDelay_before_hit_fmt.get(sportid, {}).get('Bdelay_updatedAt'))
                 # @@change559(done for single)
                 # get threshold of BetDelay of sport
-                sportid_BetDelay_threshold = hlp.get_threshold_bd(hitObject, memSetting_before_hit, memBetDelay_before_hit_fmt, sportid)
+                sportid_BetDelay_threshold = hlp.get_threshold_bd(hitObject, memSetting_before_hit, memBetDelay_before_hit_fmt, sportid,to_apply_creditScore_BD)
 
                 # process single EGON
                 if hitObject.single_EGON:

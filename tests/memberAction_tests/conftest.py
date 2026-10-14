@@ -57,19 +57,32 @@ OPERATORS = {
         "==": lambda given_value, defined_value: given_value == defined_value,
     }
 def get_criteria_checking_function(criteria):
-    """Compiles a rule into a native, fast-executing python closure."""
+    """
+    1)this function will receive metricName and its accepted range, eg:
+    {'minwager':{'key':'minwager','value': '0.10', 'valueOperator': '>=','value2': '0.20', 'valueOperator2': '<=' }
+    2) then convert into python function ,eg:
+    lambda input_value: func1(input_value, 0.10) and func2(input_value, 0.20)
+    which behind the scene same as lambda input_value: input_value>=0.1 and input_value<=0.20
+    3) caller captures/assigns the function into a variable, eg. abc =  get_criteria_checking_function(criteria)
+    4) to trigger this function, do abc(0.015) which give boolean True
+    """
+    # if this particular metric(eg. minWager) doesn't exist, means not applicable ,means no check, regardless wat value jz let it passed
     if not criteria:
-        return lambda inp_value: True  #if this metric doesnt exists, means not applicable ,means no check, regardless wat value jz let it passed
+        return lambda inp_value: True
 
+    # extract range value and the range operator to build lambda function
     criteria_minValue, minOp = criteria.get("value"), criteria.get("valueOperator")
     criteria_maxValue, maxOp = criteria.get("value2"), criteria.get("value2Operator")
-
+    #retrieve lambda function definition based on operator using upper bounder(func1) and lower boundery(func2)
     func1 = OPERATORS[minOp] if (minOp and criteria_minValue is not None) else None #eg.func1 = lambda given_value, defined_value: given_value >= defined_value
     func2 = OPERATORS[maxOp] if (maxOp and criteria_maxValue is not None) else None
     criteria_minValue_f = float(criteria_minValue) if criteria_minValue is not None else None
     criteria_maxValue_f = float(criteria_maxValue) if criteria_maxValue is not None else None
 
+    #return lambada function which contain another lambda functions(func1 or/and func2)
     if func1 and func2:
+        # input_value is dynamic(to be provided when calling this function).
+        # criteria_min/maxValue_f is fixed value that retrieve from input argument 'criteria' which is the min & max value
         return lambda input_value: func1(input_value, criteria_minValue_f) and func2(input_value, criteria_maxValue_f)
     elif func1:
         return lambda input_value: func1(input_value, criteria_minValue_f)
@@ -79,7 +92,7 @@ def get_criteria_checking_function(criteria):
 
 @pytest.fixture(scope="session")
 def api_CalcBL_CSfinalBL_mapping(api_session):
-    print('api_CalcBL_CSfinalBL_mapping fixtureeeeee')
+    print('session to map 10%-20% to 25%')
     url = f"{const.API_BASE_URL}/systemsetting/GetCreditScoreSettingListByKey"   #@@change all related....
     data = {"key": "Final_Bet_Limit_Mapping"}
     response = call_api(api_session,'api_CalcBL_CSfinalBL_mapping', 'post', url, data)
@@ -87,8 +100,10 @@ def api_CalcBL_CSfinalBL_mapping(api_session):
 
     CSfinalBL_calculatedBL_mapping = []
     for item in response.json()["data"]:
-        # for each CS_finalBL row, put all metrics/criteria into a list
-        # {  'minwager':{..,'key':'minwager','value': '0.10', 'valueOperator': '>='},'minExp':{..,'key':'minExp','value': '0.30', 'valueOperator': '>='}  }
+        # for each Arber row, put all metrics/criteria into a list
+        # {  'minwager':{..,'key':'minwager','value': '0.10', 'valueOperator': '>='},
+        #    'minExp':{..,'key':'minExp','value': '0.30', 'valueOperator': '>='},'value': '0.50', 'valueOperator': '<' ,
+        # }
         #criteria_dict = {s["key"]: s for s in item["settingList"]}
 
         # then for each metric , convert the value/operator & value2/operator2 into a lambda function
@@ -114,6 +129,18 @@ def api_CalcBL_CSfinalBL_mapping(api_session):
     # print(inspect.getsource(func))
     return CSfinalBL_calculatedBL_mapping
 
+@pytest.fixture(scope="session")
+def api_assignedCS_delaymodifier_mapping(api_session):
+    print('session to assignedCS 0.5 to 2DM')
+    url = f"{const.API_BASE_URL}/systemsetting/GetCreditScoreSettingListByKey"   #@@change all related....
+    data = {"key": "CreditScore_And_DelayModifier_Mapping"}
+    response = call_api(api_session,'api_assignedCS_delaymodifier_mapping', 'post', url, data)
+    assert response.status_code == 200, f"calling to api_assignedCS_delaymodifier_mapping return {response.status_code} "
+
+    assignedCS_delaymodifier_mapping = {float(item['resultValue']): 0 if item['result2Value'] is None else int(item['result2Value']) for item in response.json()["data"]}
+    # assignedCS_delaymodifier_mapping =
+    # {0.01: 5, 0.05: 4, 0.1: 3, 0.25: 3, 0.5: 2, 1.0: 0, 1.5: -1, 2.0: -1, 3.0: -2, 4.0: -2, 5.0: -3}
+    return assignedCS_delaymodifier_mapping
 
 # @pytest.fixture(scope="session")
 # def mspID_by_rankNum():

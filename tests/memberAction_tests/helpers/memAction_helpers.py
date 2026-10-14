@@ -90,30 +90,40 @@ def get_most_severe_value_from_all_moduleHits(hitObject, moduleHistory_after_hit
 
     return smallest_ranking_number_msp, smallest_ranking_number_spread, betDelay_Severest_dict, memCategory_of_directEGON, isAdvised_of_directEGON, BetDelay_of_directEGON
 
+def to_apply_creditscore(creditScore_before_hit,msp_smallest_rankNum,msp_before_hit,p_CS_GT1_fullfill_otherConditions):
+    # to change, right now i skip CSaction if noCS or CS>1 or memCat=molly,etc..(both BL & BD has same omit conditions)
+    if not creditScore_before_hit or (creditScore_before_hit and creditScore_before_hit > 1 and p_CS_GT1_fullfill_otherConditions==False ):  # @@change . see if there is a need to retrieve minCS from general setting
+        return False
 
+    if msp_smallest_rankNum is not None:
+        BL_ori_raw_percentage_value = MemberProfileSettingMappers.get_perc_by_ranking(msp_smallest_rankNum)
+        existing_BL_raw_percentage_value = MemberProfileSettingMappers.get_perc_by_id(msp_before_hit)
+        # for newAction BL or existing BL do not have raw_percentage value,
+        # no need to apply creditScore. eg.Molly group, RMB1Group etc..return orig newActionBL
+        if BL_ori_raw_percentage_value == None or existing_BL_raw_percentage_value == None:
+            return False
 
-def creditScore_application(smallest_rankNum, api_CalcBL_CSfinalBL_mapping, creditScore_before_hit):
-    to_apply_creditScore = False
-    # if CS is <=1  or dont have creditScore, no need apply creditScore, return newActionBL
-    if not creditScore_before_hit or (creditScore_before_hit and creditScore_before_hit <= 1  ):  # @@change . see if there is a need to retrieve minCS from general setting
-        return smallest_rankNum,to_apply_creditScore
+    return True #apply creditScore/delayModifier action
 
-    BL_ori_raw_percentage_value = MemberProfileSettingMappers.get_perc_by_ranking(smallest_rankNum)
-    # for those that has no raw_percentage value, no need to apply creditScore. eg.Molly group, RMB1Group etc..return newActionBL
-    if BL_ori_raw_percentage_value == None:
-        return smallest_rankNum,to_apply_creditScore
-
-    # retrieve the CS_finalBL rankNum if there is matching calculated_BL_raw_perc range
-    calculated_BL_raw_perc = BL_ori_raw_percentage_value * creditScore_before_hit
-    for mapping in api_CalcBL_CSfinalBL_mapping:
-        # pass in argument(calculated_BL_raw_perc) into lambda function(that check if calculated_raw_BL is within defined range that map to CS_finalBL_ID)
-        if mapping['func_within_defined_CalcBL_range'](float(calculated_BL_raw_perc)):
-            return MemberProfileSettingMappers.get_ranking_by_ID(mapping['CS_finalBL_ID']),True #return newActionBL*CreditScore
-
+def creditScore_application_BL(msp_smallest_rankNum, api_CalcBL_CSfinalBL_mapping, creditScore_before_hit,msp_before_hit,p_CS_GT1_fullfill_otherConditions):
+    if to_apply_creditscore(creditScore_before_hit, msp_smallest_rankNum,msp_before_hit,p_CS_GT1_fullfill_otherConditions):
+        BL_ori_raw_percentage_value = MemberProfileSettingMappers.get_perc_by_ranking(msp_smallest_rankNum)
+        # retrieve the CS_finalBL rankNum if there is matching calculated_BL_raw_perc range
+        calculated_BL_raw_perc = BL_ori_raw_percentage_value * creditScore_before_hit
+        for mapping in api_CalcBL_CSfinalBL_mapping:
+            # pass in argument(calculated_BL_raw_perc) into lambda function(that check if calculated_raw_BL is within defined range that map to CS_finalBL_ID)
+            if mapping['func_within_defined_CalcBL_range'](float(calculated_BL_raw_perc)):
+                return MemberProfileSettingMappers.get_ranking_by_ID(
+                    mapping['CS_finalBL_ID']), True  # return newActionBL*CreditScore
     # if mapping between calculated_BL_raw_perc range and CS_FinalBL is not found/defined,  return newActionBL
-    return smallest_rankNum,to_apply_creditScore
+    return msp_smallest_rankNum,False
 
-
+def creditScore_application_BD(NewHit_BetDelay, api_assignedCS_delaymodifier_mapping, creditScore_before_hit,msp_before_hit,msp_smallest_rankNum,p_CS_GT1_fullfill_otherConditions):
+    if to_apply_creditscore(creditScore_before_hit,msp_smallest_rankNum,msp_before_hit,p_CS_GT1_fullfill_otherConditions):
+        if api_assignedCS_delaymodifier_mapping[creditScore_before_hit]:
+            return NewHit_BetDelay + api_assignedCS_delaymodifier_mapping[creditScore_before_hit], True  # return NewHit_BetDelay*DelayModifier
+    # if mapping between calculated_BL_raw_perc range and CS_FinalBL is not found/defined,  return newActionBL
+    return NewHit_BetDelay,False
 
 
 def BL_SG_Cross_Module_check(memSetting_before_hit, hitObject, smallest_rankNum, field_type):
@@ -205,8 +215,9 @@ def BL_SG_Single_Module_check(memSetting_before_hit, hitObject, new_Hit_Action, 
             errMsg = f'this test case is not covered, please check'
     return smallest_rankNum, errMsg
 
-#@@change559(done)
-def get_threshold_bd(hitObject,memSetting_before_hit,memBetDelay_before_hit_fmt, sportid):
+
+def get_threshold_bd(hitObject,
+                     memSetting_before_hit,memBetDelay_before_hit_fmt, sportid,to_apply_creditScore_BD):
     BD_threshold = None
     BD_priorValue_UpdDate = memBetDelay_before_hit_fmt.get(sportid, {}).get('revisedGBBetDelayUpdatedDate')
     BD_priorValue_Flag = memSetting_before_hit['isManualRevised']
@@ -218,35 +229,46 @@ def get_threshold_bd(hitObject,memSetting_before_hit,memBetDelay_before_hit_fmt,
     BD_UserValue = memBetDelay_before_hit_fmt.get(sportid, {}).get('GBBetDelayByUser') if BD_UserValue_UpdDate else None
     BD_PriorValue = memBetDelay_before_hit_fmt.get(sportid, {}).get('revisedGBBetDelay')  if BD_priorValue_UpdDate else None
 
-    #=== get threshold of BD (BD has no merchant,ignore merchant)==
-    # for  (1)singleEGON or (2)GBgood_hasEGON or  or (3)GBbad_EGONbad,
-    #      use priorFlag or merchantValue(whichever latest) as cap
-    if (hitObject.single_EGON or hitObject.cross_GBGood_hasEGON or hitObject.cross_GBBad_EGONBad):
-        if (BD_priorValue_UpdDate):  # apply threshold if got, else No threshold
+    # === get threshold of BD (BD has no merchant,so no merchant checking is applied here)==
+    # if got CreditScore, do not apply user limit, only prioritise flag(no checking of merchant limit here as BD has no merchant upd)======
+    if (to_apply_creditScore_BD == True):
+        if (BD_priorValue_UpdDate):  # apply threshold if got, else No threshold for BD
             BD_candidates = []
             if BD_priorValue_UpdDate:  # save down for further check only if flag is on, value exists and date exists
                 BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue))
             _, BD_threshold = max(BD_candidates, key=lambda x: x[0])
-    # for (4)singleGBrule;SingleGBfeature or (5)GBonly_good (6)crossGBonly_bad ,
-    #      use UserValue or PrioritiseValue(whichever latest) as cap
-    elif ((hitObject.singleModule and not hitObject.single_EGON) or hitObject.cross_onlyGBs_noEGON_GBGood or hitObject.cross_onlyGBs_noEGON_GBBad):
-        if (BD_UserValue_UpdDate or BD_priorValue_UpdDate):  # apply threshold if there is, else initialValue
-            BD_candidates = []
-            if BD_UserValue_UpdDate:
-                BD_candidates.append((BD_UserValue_UpdDate, BD_UserValue))
-            if BD_priorValue_UpdDate:
-                BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue))
-            _, BD_threshold = max(BD_candidates, key=lambda x: x[0])
-    # for (7)GBbad_egonGood,
-    #     use UserValue or PrioritiseValue or MerchantValue(whichever latest)
-    elif (hitObject.cross_GBBad_EGONGood):
-        if (BD_UserValue_UpdDate or BD_priorValue_UpdDate):  # apply threshold if there is, else initial value
-            BD_candidates = []
-            if BD_UserValue_UpdDate:
-                BD_candidates.append((BD_UserValue_UpdDate, BD_UserValue ))
-            if BD_priorValue_UpdDate:
-                BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue ))
-            _, BD_threshold  = max(BD_candidates, key=lambda x: x[0])
+
+    # if no creditScore,apply type of threshold accordingly depends on single/cross type
+    else:
+        # for  (1)singleEGON or (2)GBgood_hasEGON or  or (3)GBbad_EGONbad,
+        #      use priorFlag or merchantValue(whichever latest) as cap
+        if (hitObject.single_EGON or hitObject.cross_GBGood_hasEGON or hitObject.cross_GBBad_EGONBad):
+            if (BD_priorValue_UpdDate):  # apply threshold if got, else No threshold
+                BD_candidates = []
+                if BD_priorValue_UpdDate:  # save down for further check only if flag is on, value exists and date exists
+                    BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue))
+                _, BD_threshold = max(BD_candidates, key=lambda x: x[0])
+        # for (4)singleGBrule;SingleGBfeature or (5)GBonly_good (6)crossGBonly_bad ,
+        #      use UserValue or PrioritiseValue(whichever latest) as cap
+        elif ((
+                      hitObject.singleModule and not hitObject.single_EGON) or hitObject.cross_onlyGBs_noEGON_GBGood or hitObject.cross_onlyGBs_noEGON_GBBad):
+            if (BD_UserValue_UpdDate or BD_priorValue_UpdDate):  # apply threshold if there is, else initialValue
+                BD_candidates = []
+                if BD_UserValue_UpdDate:
+                    BD_candidates.append((BD_UserValue_UpdDate, BD_UserValue))
+                if BD_priorValue_UpdDate:
+                    BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue))
+                _, BD_threshold = max(BD_candidates, key=lambda x: x[0])
+        # for (7)GBbad_egonGood,
+        #     use UserValue or PrioritiseValue or MerchantValue(whichever latest)
+        elif (hitObject.cross_GBBad_EGONGood):
+            if (BD_UserValue_UpdDate or BD_priorValue_UpdDate):  # apply threshold if there is, else initial value
+                BD_candidates = []
+                if BD_UserValue_UpdDate:
+                    BD_candidates.append((BD_UserValue_UpdDate, BD_UserValue))
+                if BD_priorValue_UpdDate:
+                    BD_candidates.append((BD_priorValue_UpdDate, BD_PriorValue))
+                _, BD_threshold = max(BD_candidates, key=lambda x: x[0])
 
     # BD_threshold cannot be None/null, downstream must be able to handle None value
     return BD_threshold
@@ -296,7 +318,7 @@ def get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore,type):
 
     # =======GET THRESHOLD VALUE===================
 
-    # if got CreditScore, apply merchant limit or prioritise Flag ===  @@changeCS: this part should be done
+    # if got CreditScore, apply merchant limit or prioritise Flag ===
     if (to_apply_creditScore == True and type == 'msp'):
         if(priorValue_UpdDate or MerchValue_UpdDate):  #apply threshold if there is, else initialValue(if initalvalue is not used, then comment out else statement)
             candidates = []
@@ -305,8 +327,8 @@ def get_threshold(hitObject, memSetting_before_hit, to_apply_creditScore,type):
             if MerchValue_UpdDate:
                 candidates.append((MerchValue_UpdDate, MerchValue_rankNum))
             _, threshold_rankNum = max(candidates, key=lambda x: x[0])
-        else:
-            threshold_rankNum = initial_rankNum          #<----i follow existing system to cap at initialValue. not sure what BA expected actually
+        #else:
+        #    threshold_rankNum = initial_rankNum          #system currently no use
     # if no CreditScore, type of threshold accordingly depends on single/cross type
     else:
         # for  (1)singleEGON or (2)GBgood_hasEGON or  or (3)GBbad_EGONbad,

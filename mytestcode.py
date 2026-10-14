@@ -1,3 +1,3 @@
-import sys
-for path in sys.path:
-    print(path)
+a= 1
+f = float(1)
+print(f==a)

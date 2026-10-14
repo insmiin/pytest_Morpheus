@@ -12,7 +12,7 @@ def mysql_connection():
         conn = mysql.connector.connect(
             host='35.229.171.142',
             user='sfqat_superadmin_qa',  #'qat_readonly',
-            password='dL72QF1Ia4',   #'NTZ6Wt3tzqCp4k7v',
+            password='@Td£0Vjw1J2$',   #'NTZ6Wt3tzqCp4k7v',
             port=3306,
             database='GB_Qat'  # !!this is DATABASEname(GB_Qat) in mysql , not the connectionName on mysql workbench....
         )
@@ -40,5 +40,15 @@ def api_session_SF():
     session = requests.Session()
     session.headers.update(
         {"Authorization": const.AUTH_TOKEN, "Content-Type": "application/json", "Connection": "keep-alive"})
+    yield session
+    session.close()
+
+
+@pytest.fixture(scope="session")
+def provider_api_session():
+    print('api_session GB fixtureeeeee')
+    session = requests.Session()
+    session.headers.update(
+        {"x-api-key": const.X_API_KEY, "Content-Type": "application/json", "Connection": "keep-alive"})
     yield session
     session.close()

@@ -1,4 +1,19 @@
 notes(not used),traceability,testcase,memberCode,companyID,hitType,gbRuleScore,toActionFlag,prerequisite1,prerequisite2,prerequisite3,EditUpdatedDate,pre_actionOnOffFlag,post_actionOnOffFlag
+,,,gbmock_t3449n040,3449,Arber - Real BB,40,yes,"byUser:yes
+memberSettingProfileID:1
+spreadGroupID:1
+RealSocBD:0
+RealBbBD:0
+CyberBD:0
+OthersBD:0
+memberCategoryID:5
+isAdvised:0
+memberProfileGroupID:
+isManualRevised:0",,,,,
+,,,gbmock_t3449n040,3449,Arber - Real BB,30,yes,,,,,"flag:off
+hittype_to_Upd:Arber - Real BB","flag:on
+hittype_to_Upd:Arber - Real BB"
+,,,gbmock_t3449n040,3449,MBR - Real Basketball,60,yes,,,,,,
 ,,,gbmock_test001,3450,MBR - Real Basketball,40,no,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
@@ -583,7 +598,7 @@ isManualRevised:0",,,,,
 hittype_to_Upd:Arber - Real BB","flag:on
 hittype_to_Upd:Arber - Real BB"
 ,,,gbmock_t3449n022,3449,MBR - Real Basketball,60,yes,,,,,,
-,single_Scn#3_tc#1b,,gbmock_t3449n023,3449,Arber - Real BB,40,yes,"byUser:yes
+,single_Scn#3_tc#1b,1,gbmock_t3449n023,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 RealSocBD:0
@@ -594,10 +609,10 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,
-,,,gbmock_t3449n023,3449,Arber - Real BB,30,yes,,,,,"flag:off
+,,2,gbmock_t3449n023,3449,Arber - Real BB,30,yes,,,,,"flag:off
 hittype_to_Upd:Arber - Real BB","flag:on
 hittype_to_Upd:Arber - Real BB"
-,,,gbmock_t3449n023,3449,MBR - Real Basketball,70,yes,,,,,,
+,,3,gbmock_t3449n023,3449,MBR - Real Basketball,70,yes,,,,,,
 ,single_Scn#3_tc#2,,gbmock_t3449n008,3449,Arber - Real BB,40,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
@@ -1266,7 +1281,7 @@ isManualRevised:",,,,,
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball"
 ,,,gbmock_t3449n026,3449,MBR - Real Basketball,70,no,,,,,,
-,noActCondMet#4,1,gbmock_t3449n025,3449,MBR - Real Basketball,50,no,"byUser:yes
+,noActCondMet#4,,gbmock_t3449n025,3449,MBR - Real Basketball,50,no,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 RealSocBD:0
@@ -1277,11 +1292,11 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,
-,,2,gbmock_t3449n025,3449,MBR - Real Basketball,40,no,,,,"outsideValidPeriod:yes
+,,,gbmock_t3449n025,3449,MBR - Real Basketball,40,no,,,,"outsideValidPeriod:yes
 module_to_Upd:MBR - Real Basketball
 upd_module_DT:yes
 upd_memsetting_DT:yes",,
-,noActCondMet#5,3,gbmock_t3449n025,3449,MBR - Real Basketball,50,yes,"byUser:yes
+,noActCondMet#5,,gbmock_t3449n025,3449,MBR - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 RealSocBD:0
@@ -1292,11 +1307,11 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,
-,,4,gbmock_t3449n025,3449,MBR - Real Basketball,40,no,,,,"outsideValidPeriod:yes
+,,,gbmock_t3449n025,3449,MBR - Real Basketball,40,no,,,,"outsideValidPeriod:yes
 module_to_Upd:MBR - Real Basketball
 upd_module_DT:yes
 upd_memsetting_DT:yes",,
-,noActCondMet#6,5,gbmock_t3449n025,3449,MBR - Real Basketball,50,yes,"byUser:yes
+,noActCondMet#6,,gbmock_t3449n025,3449,MBR - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
 RealSocBD:0
@@ -1307,7 +1322,7 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,
-,,6,gbmock_t3449n025,3449,MBR - Real Basketball,40,yes,,,,"outsideValidPeriod:yes
+,,,gbmock_t3449n025,3449,MBR - Real Basketball,40,yes,,,,"outsideValidPeriod:yes
 module_to_Upd:MBR - Real Basketball
 upd_module_DT:yes
 upd_memsetting_DT:yes",,

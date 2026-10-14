@@ -102,6 +102,10 @@ class MemberProfileSettingMappers:
         # Extremely fast O(1) dictionary lookup
         return cls._member_profileSetting_ranking_to_perc_map.get(int(ranking), None)
     @classmethod
+    def get_perc_by_id(cls, ID):
+        ID = int(ID)
+        return cls.member_profileSetting_dict[ID]['percentage']
+    @classmethod
     def get_id_by_percentage(cls, percentage):
         # Extremely fast O(1) dictionary lookup
         return cls._member_profileSetting_perc_to_id_map.get(int(percentage), None)
