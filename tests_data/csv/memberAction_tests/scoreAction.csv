@@ -1,4 +1,15 @@
 notes(not used),traceability,testcase,memberCode,companyID,hitType,gbRuleScore,toActionFlag,prerequisite1,prerequisite2,prerequisite3,EditUpdatedDate,pre_actionOnOffFlag,post_actionOnOffFlag,,,
+,,1,gbmock_tdir004,3442,EGON,70,yes,"byUser:yes
+memberSettingProfileID:12
+spreadGroupID:1
+RealSocBD:0
+RealBbBD:0
+CyberBD:0
+OthersBD:0
+memberCategoryID:5
+isAdvised:0
+memberProfileGroupID:
+isManualRevised:0",,,,,,,,
 ,,,gbmock_t3442n040,3442,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:1
 spreadGroupID:1
@@ -344,7 +355,7 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:",,,,,,,,
-4,cross#9,31,gbmock_t3442n003,3442,MBR - Real Basketball,50,yes,"byUser:yes
+4,cross#9,,gbmock_t3442n003,3442,MBR - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -355,8 +366,8 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,1
-5,,32,gbmock_t3442n003,3442,MBR - Real Soccer,60,yes,,,,,,,,,2
-,cross#10a,33,gbmock_t3442n010,3442,MBR - Real Basketball,50,yes,"byUser:yes
+5,,,gbmock_t3442n003,3442,MBR - Real Soccer,60,yes,,,,,,,,,2
+,cross#10a,,gbmock_t3442n010,3442,MBR - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -367,16 +378,16 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,
-,,34,gbmock_t3442n010,3442,Arber - Real BB,50,yes,,,,,,,,,
-,,35,gbmock_t3442n010,3442,FAMember - Invalid Key,,Action#1,,,,"outsideValidPeriod:no
+,,,gbmock_t3442n010,3442,Arber - Real BB,50,yes,,,,,,,,,
+,,,gbmock_t3442n010,3442,FAMember - Invalid Key,,Action#1,,,,"outsideValidPeriod:no
 module_to_Upd:Arber - Real BB
 upd_module_DT:yes
 upd_memsetting_DT:no",,,,,
-,,36,gbmock_t3442n010,3442,FAMember - Invalid Key,,Action#1,,,,"outsideValidPeriod:yes
+,,,gbmock_t3442n010,3442,FAMember - Invalid Key,,Action#1,,,,"outsideValidPeriod:yes
 module_to_Upd:Arber - Real BB
 upd_module_DT:yes
 upd_memsetting_DT:no",,,,,
-,cross#10b,37,gbmock_t3442n022,3442,FAMember - Invalid Key,,Action#1,"byUser:yes
+,cross#10b,,gbmock_t3442n022,3442,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -387,13 +398,13 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,
-,,38,gbmock_t3442n022,3442,ISBBR - Real Basketball,,Action#1,,,,,,,,,
-,,39,gbmock_t3442n022,3442,Arber - Real BB,50,yes,,,,,,,,,
-,,40,gbmock_t3442n022,3442,ISBBR - Real Basketball,,Action#1,,,,"outsideValidPeriod:yes
+,,,gbmock_t3442n022,3442,ISBBR - Real Basketball,,Action#1,,,,,,,,,
+,,,gbmock_t3442n022,3442,Arber - Real BB,50,yes,,,,,,,,,
+,,,gbmock_t3442n022,3442,ISBBR - Real Basketball,,Action#1,,,,"outsideValidPeriod:yes
 module_to_Upd:Arber - Real BB
 upd_module_DT:yes
 upd_memsetting_DT:no",,,,,
-,cross#10c,41,gbmock_t3442n070,3442,EGON,50,yes,"byUser:yes
+,cross#10c,,gbmock_t3442n070,3442,EGON,50,yes,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -404,13 +415,13 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,
-,,42,gbmock_t3442n070,3442,Arber - Real BB,60,yes,,,,,,,,,
-,,43,gbmock_t3442n070,3442,TWM - Real Basketball,50,yes,,,,,,,,,
-,,44,gbmock_t3442n070,3442,TWM - Real Basketball,50,yes,,,,"outsideValidPeriod:yes
+,,,gbmock_t3442n070,3442,Arber - Real BB,60,yes,,,,,,,,,
+,,,gbmock_t3442n070,3442,TWM - Real Basketball,50,yes,,,,,,,,,
+,,,gbmock_t3442n070,3442,TWM - Real Basketball,50,yes,,,,"outsideValidPeriod:yes
 module_to_Upd:EGON
 upd_module_DT:yes
 upd_memsetting_DT:no",,,,,
-,cross#10d,45,gbmock_t3442n072,3442,EGON,70,yes,"byUser:yes
+,cross#10d,,gbmock_t3442n072,3442,EGON,70,yes,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -421,16 +432,16 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,
-,,46,gbmock_t3442n072,3442,FAMember - Invalid Key,,Action#1,,,,,,,,,
-,,47,gbmock_t3442n072,3442,ISBBR - Real Basketball,,action #1,,,,"outsideValidPeriod:no
+,,,gbmock_t3442n072,3442,FAMember - Invalid Key,,Action#1,,,,,,,,,
+,,,gbmock_t3442n072,3442,ISBBR - Real Basketball,,action #1,,,,"outsideValidPeriod:no
 module_to_Upd:EGON
 upd_module_DT:yes
 upd_memsetting_DT:no",,,,,
-,,48,gbmock_t3442n072,3442,ISBBR - Real Basketball,,action #1,,,,"outsideValidPeriod:yes
+,,,gbmock_t3442n072,3442,ISBBR - Real Basketball,,action #1,,,,"outsideValidPeriod:yes
 module_to_Upd:EGON
 upd_module_DT:yes
 upd_memsetting_DT:no",,,,,
-,cross#10e,49,gbmock_t3442n073,3442,FAMember - Invalid Key,,Action#1,"byUser:yes
+,cross#10e,,gbmock_t3442n073,3442,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -441,14 +452,14 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,
-,,50,gbmock_t3442n073,3442,ISBBR - Real Basketball,,Action#1,,,,,,,,,
-,,51,gbmock_t3442n073,3442,Arber - Real BB,60,yes,,,,,,,,,
-,,52,gbmock_t3442n073,3442,Arber - Real BB,60,yes,,,,"outsideValidPeriod:yes
+,,,gbmock_t3442n073,3442,ISBBR - Real Basketball,,Action#1,,,,,,,,,
+,,,gbmock_t3442n073,3442,Arber - Real BB,60,yes,,,,,,,,,
+,,,gbmock_t3442n073,3442,Arber - Real BB,60,yes,,,,"outsideValidPeriod:yes
 module_to_Upd:ISBBR - Real Basketball
 upd_module_DT:yes
 upd_memsetting_DT:no",,,,,
 ,"cross#11
-*2 more steps with whitelist, do it manually",53,gbmock_t3442n011,3442,FAMember - Invalid Key,,Action#1,"byUser:yes
+*2 more steps with whitelist, do it manually",,gbmock_t3442n011,3442,FAMember - Invalid Key,,Action#1,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -459,12 +470,12 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:",,,,,,,,
-,,54,gbmock_t3442n011,3442,MBR - Real Basketball,50,yes,,,,,,,,,
-,,55,gbmock_t3442n011,3442,MBR - Real Basketball,50,yes,,,,,"flag:off
+,,,gbmock_t3442n011,3442,MBR - Real Basketball,50,yes,,,,,,,,,
+,,,gbmock_t3442n011,3442,MBR - Real Basketball,50,yes,,,,,"flag:off
 hittype_to_Upd:MBR - Real Basketball","flag:on
 hittype_to_Upd:MBR - Real Basketball",,,
-,,56,gbmock_t3442n011,3442,MBR - Real Soccer,60,yes,,,,,,,,,
-,cross#12_merch,57,gbmock_t3442mer016,3442,MBR - Real Basketball,50,yes,"byUser:no
+,,,gbmock_t3442n011,3442,MBR - Real Soccer,60,yes,,,,,,,,,
+,cross#12_merch,,gbmock_t3442mer016,3442,MBR - Real Basketball,50,yes,"byUser:no
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:
@@ -485,7 +496,7 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,
-,,58,gbmock_t3442mer016,3442,MBR - Real Soccer,60,yes,"byUser:yes
+,,,gbmock_t3442mer016,3442,MBR - Real Soccer,60,yes,"byUser:yes
 memberSettingProfileID:6
 spreadGroupID:6
 RealSocBD:4
@@ -506,7 +517,7 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,,,
-,cross#13_merch,59,gbmock_t3442mer017,3442,MBR - Real Basketball,50,yes,"byUser:no
+,cross#13_merch,,gbmock_t3442mer017,3442,MBR - Real Basketball,50,yes,"byUser:no
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:
@@ -527,7 +538,7 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,
-,,60,gbmock_t3442mer017,3442,MBR - Real Soccer,60,yes,"byUser:no
+,,,gbmock_t3442mer017,3442,MBR - Real Soccer,60,yes,"byUser:no
 memberSettingProfileID:1
 spreadGroupID:1
 RealSocBD:
@@ -548,7 +559,7 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:2",,,,,,,
-,cross#14_merch,61,gbmock_t3442mer018,3442,MBR - Real Basketball,50,yes,"byUser:no
+,cross#14_merch,,gbmock_t3442mer018,3442,MBR - Real Basketball,50,yes,"byUser:no
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:
@@ -569,7 +580,7 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,3
-,,62,gbmock_t3442mer018,3442,MBR - Real Soccer,60,yes,"byUser:yes
+,,,gbmock_t3442mer018,3442,MBR - Real Soccer,60,yes,"byUser:yes
 memberSettingProfileID:17
 spreadGroupID:4
 RealSocBD:5
@@ -600,7 +611,7 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,,4
-,cross#14b_merch,63,gbmock_t3442mer032,3442,MBR - Real Basketball,50,yes,"byUser:no
+,cross#14b_merch,,gbmock_t3442mer032,3442,MBR - Real Basketball,50,yes,"byUser:no
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:
@@ -621,7 +632,7 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,3
-,,64,gbmock_t3442mer032,3442,MBR - Real Soccer,60,yes,"byUser:yes
+,,,gbmock_t3442mer032,3442,MBR - Real Soccer,60,yes,"byUser:yes
 memberSettingProfileID:17
 spreadGroupID:4
 RealSocBD:5
@@ -652,7 +663,7 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:",,,,,,4
-,cross#15,65,gbmock_t3442n013,3442,MBR - Real Basketball,50,yes,"byUser:yes
+,cross#15,,gbmock_t3442n013,3442,MBR - Real Basketball,50,yes,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -663,7 +674,7 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,
-,,66,gbmock_t3442n013,3442,MBR - Real Soccer,60,yes,"byUser:yes
+,,,gbmock_t3442n013,3442,MBR - Real Soccer,60,yes,"byUser:yes
 memberSettingProfileID:6
 spreadGroupID:6
 RealSocBD:1
@@ -674,7 +685,7 @@ memberCategoryID:
 isAdvised:
 memberProfileGroupID:
 isManualRevised:2",,,,,,,,
-,cross#16,67,gbmock_t3442n012,3442,EGON,50,yes,"byUser:yes
+,cross#16,,gbmock_t3442n012,3442,EGON,50,yes,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -685,12 +696,12 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,
-,,68,gbmock_t3442n012,3442,TWM - Real Basketball,50,yes,,,,"outsideValidPeriod:yes
+,,,gbmock_t3442n012,3442,TWM - Real Basketball,50,yes,,,,"outsideValidPeriod:yes
 module_to_Upd:EGON
 upd_module_DT:yes
 upd_memsetting_DT:no",,,,,
-,,69,gbmock_t3442n012,3442,MBR - Real Basketball,80,yes,,,,,,,,,
-,cross#17,70,gbmock_t3442n001,3442,Arber - Real BB,10,yes,"byUser:yes
+,,,gbmock_t3442n012,3442,MBR - Real Basketball,80,yes,,,,,,,,,
+,cross#17,,gbmock_t3442n001,3442,Arber - Real BB,10,yes,"byUser:yes
 memberSettingProfileID:12
 spreadGroupID:1
 RealSocBD:0
@@ -701,5 +712,5 @@ memberCategoryID:5
 isAdvised:0
 memberProfileGroupID:
 isManualRevised:0",,,,,,,,
-,,71,gbmock_t3442n001,3442,TWM - Real Basketball,50,yes,,,,,,,,,
-,,72,gbmock_t3442n001,3442,TWM - Real Basketball,80,yes,,,,,,,,,
+,,,gbmock_t3442n001,3442,TWM - Real Basketball,50,yes,,,,,,,,,
+,,,gbmock_t3442n001,3442,TWM - Real Basketball,80,yes,,,,,,,,,

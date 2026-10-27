@@ -16,7 +16,7 @@ from collections import defaultdict
 # Constants
 API_BASE_URL = "https://api.qat.fraudsterkill.com/api"
 #when copying auth_token from f12 developer tool, copy as raw source to avoid ...(abreviation)
-AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzczODU5NjAsInVzZXIiOnsiaWQiOjEsIm5hbWUiOiJhZG1pbiIsInJvbGVHcm91cCI6IlJpc2siLCJ0cmFjZUlEIjoiMEhOS1ZIN01WNE0yNTowMDAwMDAwMiJ9LCJwZXJtaXNzaW9ucyI6WzMsMTEsMTIsMTUsMTYsMTcsMTksMjAsMjEsMjIsMjMsMjQsMjUsMjgsMjksMzAsMzEsMzIsMzMsMzQsMzUsMzYsMzcsMzksNDAsNDEsNDIsNDMsNDQsNDUsNDYsNDcsNDgsNDksNTAsNTEsNTIsNTMsNjAsNjEsNjIsNjMsNjQsNjUsNjYsNjcsNjgsNjksNzMsNzQsNzUsNzYsNzcsNzgsNzksODAsODEsODIsODMsODQsODUsODYsODcsODgsODksOTMsOTQsOTUsOTYsOTcsOTgsOTksMTAwLDEwMSwxMDIsMTAzLDEwNCwxMDUsMTA2LDEwNywxMDgsMTA5LDExMCwxMTEsMTEyLDExMywxMTQsMTE1LDExNiwxMTcsMTE4LDEyMCwxMjEsMTIyLDEyMywxMjQsMTI1LDEyNiwxMjcsMTI4LDEyOSwxMzAsMTMxLDEzMiwxMzMsMTM0LDEzNSwxMzYsMTM3LDEzOSwxNDAsMTQxLDE0MiwxNDMsMTQ0LDE0NSwxNDYsMTQ3LDE0OCwxNDksMTUwLDE1MSwxNTIsMTUzLDE1NCwxNTUsMTU2LDE1NywxNTgsMTU5LDE2MCwxNjcsMTY4LDE2OSwxNzAsMTcxLDE3MiwxNzMsMTc0LDE3NSwxNzYsMTc4LDE3OSwxODAsMTgxLDE4MiwxODMsMTg0LDE4NSwxODYsMTk5LDIwMCwyMDEsMjAyLDIwMywyMDQsMjA1LDIwNiwyMDcsMjA4LDIwOSwyMTAsMjExLDIxMiwyMTksMjIwLDIyMSwyMjIsMjIzLDIyNCwyMjUsMjI2LDIyNywyMjgsMjI5LDIzMCwyMzEsMjMyLDIzMywyMzQsMjM1LDIzNiwyMzcsMjM4LDIzOSwyNDAsMjQxLDI0MiwyNDMsMjQ0LDI0NSwyNDYsMjQ3LDI0OCwyNDksMjU4LDI1OSwyNjAsMjYxLDI2MiwyNjMsMSwyLDksMjYsMjcsOTAsMTc3LDI1MV19.E2ACSJBGcZI7HZNfmSfmB5zHhVTzCYjhn0gD6dKhP9w"
+AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3OTI2NDE3MDEsInVzZXIiOnsiaWQiOjQyLCJuYW1lIjoiYWRtaW4ucWFteXRlc3QiLCJyb2xlR3JvdXAiOiJDb21wbGlhbmNlIiwidHJhY2VJRCI6IjBITlA5TlJDTU5EQUI6MDAwMDAwMTYifSwicGVybWlzc2lvbnMiOlszLDExLDEyLDE1LDE2LDE3LDE5LDIwLDIxLDIyLDIzLDI0LDI1LDI4LDI5LDMwLDMxLDMyLDMzLDM0LDM1LDM2LDM3LDM5LDQwLDQxLDQyLDQzLDQ0LDQ1LDQ2LDQ3LDQ4LDQ5LDUwLDUxLDUyLDUzLDYwLDYxLDYyLDYzLDY0LDY1LDY2LDY3LDY4LDY5LDczLDc0LDc1LDc2LDc3LDc4LDc5LDgwLDgxLDgyLDgzLDg0LDg1LDg2LDg3LDg4LDg5LDkzLDk0LDk1LDk3LDk4LDk5LDEwMCwxMDEsMTAyLDEwMywxMDQsMTA1LDEwNiwxMDcsMTA4LDEwOSwxMTAsMTExLDExMiwxMTMsMTE0LDExNSwxMTYsMTE3LDExOCwxMjAsMTIxLDEyMiwxMjMsMTI0LDEyNSwxMjYsMTI3LDEyOCwxMjksMTMwLDEzMSwxMzIsMTMzLDEzNCwxMzUsMTM2LDEzNywxMzksMTQwLDE0MSwxNDIsMTQzLDE0NCwxNDUsMTQ2LDE0NywxNDgsMTQ5LDE1MCwxNTEsMTUyLDE1MywxNTQsMTU1LDE1NiwxNTgsMTU5LDE2MCwxNjcsMTY4LDE2OSwxNzAsMTcxLDE3MiwxNzMsMTc0LDE3NSwxNzYsMTc4LDE3OSwxODAsMTgxLDE4MiwxODMsMTg0LDE4NSwxODYsMTk5LDIwMCwyMDEsMjAyLDIwMywyMDQsMjA1LDIwNiwyMDcsMjA4LDIwOSwyMTAsMjExLDIxMiwyMTksMjIwLDIyMSwyMjIsMjIzLDIyNCwyMjUsMjI2LDIyNywyMjgsMjI5LDIzMCwyMzEsMjMyLDIzMywyMzQsMjM1LDIzNiwyMzcsMjM4LDIzOSwyNDAsMjQxLDI0MiwyNDMsMjQ0LDI0NSwyNDYsMjQ3LDI0OCwyNDksMjUwLDI1MiwyNTMsMjU0LDI1NSwyNTYsMjU3LDI2MCwyNjEsMjYyLDI2MywxLDIsOSwyNiwyNyw5MCwxNTcsMTc3LDI1MV19.-iXT7gO6e3DLNYdEZX_axf8k17zO5IIadoNWsxolpYQ"
 # Helper Functions
 def call_api(api_session, who: str,method: str, url: str, json_data: Optional[Dict] = None) -> requests.Response:
     """Make an API request."""
@@ -158,7 +158,7 @@ def api_session():
     yield session
     session.close()
 
-KEY_PATH = "C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/testing/py-gcpBQ/carbon-sensor-259109-d37561cb1a02.json"
+KEY_PATH = "C:/Users/lim.miin/Desktop/testing/py-gcpBQ/carbon-sensor-259109-d37561cb1a02.json"
 @pytest.fixture(scope="session")
 def bigquery_client():
     if not os.path.exists(KEY_PATH):
@@ -184,7 +184,7 @@ def format_value(key,value):
 
 # Test Function
 @pytest.mark.parametrize("csv_filter"
-                         ,format_filters(read_csv("C:/Users/lim.miin/OneDrive - Morpheus Consulting Pte Ltd/Desktop/testing/Output check/MemberDashboard.csv"))
+                         ,format_filters(read_csv("C:/Users/lim.miin/Desktop/testing/Output check/MemberDashboard.csv"))
                          ,ids=lambda csv_filter: f"testcase_{csv_filter['testcase']}"
                          )
 #comment:: use this block of code if calling real Object(GetArberMemberSummaryList API)
