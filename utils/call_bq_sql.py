@@ -1,3 +1,4 @@
+# work. use my own gcp credential to access
 # 1) Install the Google Cloud CLI
 # 2) run this on pycharm terminal  -->  gcloud auth application-default login
 #    login using your credentials
